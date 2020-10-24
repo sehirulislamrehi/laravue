@@ -1,130 +1,120 @@
 <template>
-  <v-app>
-    <v-card class="login_component">
-      <v-container class="container">
-        <v-row>
-          <v-col md="4" offset-md="4">
-            <v-card class="mx-auto login-card" outlined>
-              <!-- form start -->
-              <v-form ref="form" v-model="valid" lazy-validation>
-                <v-text-field
-                  v-model="name"
-                  :counter="20"
-                  :rules="nameRules"
-                  label="Name"
-                  required
-                ></v-text-field>
+    <v-app>
+        <v-card class="login_component">
+            <v-container class="container">
+                <v-row>
+                    <v-col md="4" offset-md="4">
+                        <v-card class="mx-auto login-card" outlined>
+                            <!-- form start -->
+                            <v-form ref="form" v-model="valid" lazy-validation>
+                                <v-text-field
+                                    v-model="name"
+                                    :counter="10"
+                                    :rules="nameRules"
+                                    label="Name"
+                                    required
+                                ></v-text-field>
 
-                <v-text-field
-                  v-model="email"
-                  :rules="emailRules"
-                  label="E-mail"
-                  required
-                ></v-text-field>
+                                <v-text-field
+                                    v-model="email"
+                                    :rules="emailRules"
+                                    label="E-mail"
+                                    required
+                                ></v-text-field>
 
-                <v-text-field
-            v-model="password"
-            :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-            :rules="[rules.required, rules.min]"
-            :type="show1 ? 'text' : 'password'"
-            name="input-10-1"
-            label="Password"
-            hint="At least 8 characters"
-            counter
-            @click:append="show1 = !show1"
-          ></v-text-field>
+                                <v-text-field
+                                    v-model="password"
+                                    :append-icon="
+                                        show1 ? 'mdi-eye' : 'mdi-eye-off'
+                                    "
+                                    :rules="[rules.required, rules.min]"
+                                    :type="show1 ? 'text' : 'password'"
+                                    name="input-10-1"
+                                    label="Password"
+                                    hint="At least 8 characters"
+                                    counter
+                                    @click:append="show1 = !show1"
+                                ></v-text-field>
 
-          <v-text-field
-            v-model="password"
-            :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-            :rules="[rules.required, rules.min]"
-            :type="show1 ? 'text' : 'password'"
-            name="input-10-1"
-            label="Confirm Password"
-            hint="At least 8 characters"
-            counter
-            @click:append="show1 = !show1"
-          ></v-text-field>
+                                <v-text-field
+                                    v-model="password"
+                                    :append-icon="
+                                        show2 ? 'mdi-eye' : 'mdi-eye-off'
+                                    "
+                                    :rules="[rules.required, rules.min]"
+                                    :type="show2 ? 'text' : 'password'"
+                                    name="input-10-1"
+                                    label="Confirm Password"
+                                    hint="At least 8 characters"
+                                    counter
+                                    @click:append="show2 = !show2"
+                                ></v-text-field>
 
-                <v-btn color="success" class="mr-4"> Register </v-btn>
-              </v-form>
-              <!-- form end -->
-              <div style="margin-top: 15px;">
-                <p>Already registered?  <router-link to="/login">Go to login page</router-link> </p>
-              </div>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-card>
-  </v-app>
+                                <v-btn
+                                    color="success"
+                                    class="mr-4"
+                                >
+                                    Register
+                                </v-btn>
+
+
+                            </v-form>
+                            <!-- form end -->
+                            <div style="margin-top: 15px;">
+                                <p>
+                                    Already registered?
+                                    <router-link to="/login"
+                                        >Go to login page</router-link
+                                    >
+                                </p>
+                            </div>
+                        </v-card>
+                    </v-col>
+                </v-row>
+            </v-container>
+        </v-card>
+    </v-app>
 </template>
 
 <script>
 export default {
-  data: () => ({
-    valid: true,
-    name: "",
-    nameRules: [
-      (v) => !!v || "Name is required",
-      (v) => (v && v.length <= 20) || "Name must be less than 20 characters",
-    ],
-    email: "",
-    emailRules: [
-      (v) => !!v || "E-mail is required",
-      (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
-    ],
-    select: null,
-    items: ["Item 1", "Item 2", "Item 3", "Item 4"],
-    checkbox: false,
-  }),
-
-  methods: {
-    validate() {
-      this.$refs.form.validate();
-    },
-    reset() {
-      this.$refs.form.reset();
-    },
-    resetValidation() {
-      this.$refs.form.resetValidation();
-    },
-  },
-};
-</script>
-
-<script>
-  export default {
-    data () {
-      return {
+    data: () => ({
+        valid: true,
+        name: "",
+        nameRules: [
+            v => !!v || "Name is required",
+            v => (v && v.length <= 10) || "Name must be less than 10 characters"
+        ],
+        email: "",
+        emailRules: [
+            v => !!v || "E-mail is required",
+            v => /.+@.+\..+/.test(v) || "E-mail must be valid"
+        ],
         show1: false,
-        show2: true,
-        show3: false,
-        show4: false,
-        password: 'Password',
+        show2: false,
+        password: "Password",
         rules: {
-          required: value => !!value || 'Required.',
-          min: v => v.length >= 8 || 'Min 8 characters',
-          emailMatch: () => ('The email and password you entered don\'t match'),
-        },
-      }
-    },
-  }
+            required: value => !!value || "Required.",
+            min: v => v.length >= 8 || "Min 8 characters",
+            emailMatch: () => "The email and password you entered don't match"
+        }
+    })
+};
 </script>
 
 <style scoped>
 .login-card {
-  padding: 30px;
+    padding: 30px;
 }
 .login_component {
-  height: 100vh;
-  position: relative;
-  background: #9fa8da;
+    height: 100vh;
+    position: relative;
+    background: #9fa8da;
 }
 .login_component .container {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 </style>

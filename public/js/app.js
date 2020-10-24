@@ -294,40 +294,34 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
+      valid: true,
+      name: "",
+      nameRules: [function (v) {
+        return !!v || "Name is required";
+      }, function (v) {
+        return v && v.length <= 10 || "Name must be less than 10 characters";
+      }],
+      email: "",
+      emailRules: [function (v) {
+        return !!v || "E-mail is required";
+      }, function (v) {
+        return /.+@.+\..+/.test(v) || "E-mail must be valid";
+      }],
       show1: false,
-      show2: true,
-      show3: false,
-      show4: false,
-      password: 'Password',
+      show2: false,
+      password: "Password",
       rules: {
         required: function required(value) {
-          return !!value || 'Required.';
+          return !!value || "Required.";
         },
         min: function min(v) {
-          return v.length >= 8 || 'Min 8 characters';
+          return v.length >= 8 || "Min 8 characters";
         },
         emailMatch: function emailMatch() {
-          return 'The email and password you entered don\'t match';
+          return "The email and password you entered don't match";
         }
       }
     };
@@ -391,6 +385,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -398,30 +400,30 @@ __webpack_require__.r(__webpack_exports__);
       show2: true,
       show3: false,
       show4: false,
-      password: '',
+      password: "",
       rules: {
         required: function required(value) {
-          return !!value || 'Required.';
+          return !!value || "Required.";
         },
         min: function min(v) {
-          return v.length >= 8 || 'Min 8 characters';
+          return v.length >= 8 || "Min 8 characters";
         },
         emailMatch: function emailMatch() {
-          return 'The email and password you entered don\'t match';
+          return "The email and password you entered don't match";
         }
       },
       valid: false,
-      email: '',
+      email: "",
       emailRules: [function (v) {
-        return !!v || 'E-mail is required';
+        return !!v || "E-mail is required";
       }, function (v) {
-        return /.+@.+/.test(v) || 'E-mail must be valid';
+        return /.+@.+/.test(v) || "E-mail must be valid";
       }]
     };
   },
   methods: {
     login: function login() {
-      localStorage.setItem('token', 'asdkokcsmiowqelsapxasbh');
+      localStorage.setItem("token", "asdkokcsmiowqelsapxasbh");
     }
   }
 });
@@ -459,7 +461,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.login-card[data-v-51f045bf] {\r\n  padding: 30px;\n}\n.login_component[data-v-51f045bf] {\r\n  height: 100vh;\r\n  position: relative;\r\n  background: #9fa8da;\n}\n.login_component .container[data-v-51f045bf] {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%, -50%);\n}\r\n", ""]);
+exports.push([module.i, "\n.login-card[data-v-51f045bf] {\n    padding: 30px;\n}\n.login_component[data-v-51f045bf] {\n    height: 100vh;\n    position: relative;\n    background: #9fa8da;\n}\n.login_component .container[data-v-51f045bf] {\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n}\n", ""]);
 
 // exports
 
@@ -478,7 +480,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.login-card[data-v-413f4ec2] {\r\n  padding: 30px;\n}\n.login_component[data-v-413f4ec2] {\r\n  height: 100vh;\r\n  position: relative;\r\n  background: #9fa8da;\n}\n.login_component .container[data-v-413f4ec2] {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%, -50%);\n}\r\n", ""]);
+exports.push([module.i, "\n.login-card[data-v-413f4ec2] {\n    padding: 30px;\n}\n.login_component[data-v-413f4ec2] {\n    height: 100vh;\n    position: relative;\n    background: #9fa8da;\n}\n.login_component .container[data-v-413f4ec2] {\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n}\n", ""]);
 
 // exports
 
@@ -1883,7 +1885,7 @@ var render = function() {
                             [
                               _c("v-text-field", {
                                 attrs: {
-                                  counter: 20,
+                                  counter: 10,
                                   rules: _vm.nameRules,
                                   label: "Name",
                                   required: ""
@@ -1940,11 +1942,11 @@ var render = function() {
                               _vm._v(" "),
                               _c("v-text-field", {
                                 attrs: {
-                                  "append-icon": _vm.show1
+                                  "append-icon": _vm.show2
                                     ? "mdi-eye"
                                     : "mdi-eye-off",
                                   rules: [_vm.rules.required, _vm.rules.min],
-                                  type: _vm.show1 ? "text" : "password",
+                                  type: _vm.show2 ? "text" : "password",
                                   name: "input-10-1",
                                   label: "Confirm Password",
                                   hint: "At least 8 characters",
@@ -1952,7 +1954,7 @@ var render = function() {
                                 },
                                 on: {
                                   "click:append": function($event) {
-                                    _vm.show1 = !_vm.show1
+                                    _vm.show2 = !_vm.show2
                                   }
                                 },
                                 model: {
@@ -1970,7 +1972,11 @@ var render = function() {
                                   staticClass: "mr-4",
                                   attrs: { color: "success" }
                                 },
-                                [_vm._v(" Register ")]
+                                [
+                                  _vm._v(
+                                    "\n                                Register\n                            "
+                                  )
+                                ]
                               )
                             ],
                             1
@@ -1980,7 +1986,9 @@ var render = function() {
                             _c(
                               "p",
                               [
-                                _vm._v("Already registered?  "),
+                                _vm._v(
+                                  "\n                                Already registered?\n                                "
+                                ),
                                 _c("router-link", { attrs: { to: "/login" } }, [
                                   _vm._v("Go to login page")
                                 ])
@@ -2056,16 +2064,7 @@ var render = function() {
                         [
                           _c(
                             "v-form",
-                            {
-                              ref: "form",
-                              model: {
-                                value: _vm.valid,
-                                callback: function($$v) {
-                                  _vm.valid = $$v
-                                },
-                                expression: "valid"
-                              }
-                            },
+                            { ref: "form" },
                             [
                               _c("v-text-field", {
                                 attrs: {
@@ -2115,7 +2114,11 @@ var render = function() {
                                   attrs: { color: "success" },
                                   on: { click: _vm.login }
                                 },
-                                [_vm._v(" Login ")]
+                                [
+                                  _vm._v(
+                                    "\n                                Login\n                            "
+                                  )
+                                ]
                               )
                             ],
                             1
@@ -2125,7 +2128,9 @@ var render = function() {
                             _c(
                               "p",
                               [
-                                _vm._v("Not yet registered?  "),
+                                _vm._v(
+                                  "\n                                Not yet registered?\n                                "
+                                ),
                                 _c(
                                   "router-link",
                                   { attrs: { to: "/register" } },
@@ -61327,14 +61332,15 @@ __webpack_require__.r(__webpack_exports__);
 /*!*******************************************************!*\
   !*** ./resources/js/components/RegisterComponent.vue ***!
   \*******************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _RegisterComponent_vue_vue_type_template_id_51f045bf_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./RegisterComponent.vue?vue&type=template&id=51f045bf&scoped=true& */ "./resources/js/components/RegisterComponent.vue?vue&type=template&id=51f045bf&scoped=true&");
 /* harmony import */ var _RegisterComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./RegisterComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/RegisterComponent.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _RegisterComponent_vue_vue_type_style_index_0_id_51f045bf_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./RegisterComponent.vue?vue&type=style&index=0&id=51f045bf&scoped=true&lang=css& */ "./resources/js/components/RegisterComponent.vue?vue&type=style&index=0&id=51f045bf&scoped=true&lang=css&");
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _RegisterComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _RegisterComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var _RegisterComponent_vue_vue_type_style_index_0_id_51f045bf_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./RegisterComponent.vue?vue&type=style&index=0&id=51f045bf&scoped=true&lang=css& */ "./resources/js/components/RegisterComponent.vue?vue&type=style&index=0&id=51f045bf&scoped=true&lang=css&");
 /* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
@@ -61366,7 +61372,7 @@ component.options.__file = "resources/js/components/RegisterComponent.vue"
 /*!********************************************************************************!*\
   !*** ./resources/js/components/RegisterComponent.vue?vue&type=script&lang=js& ***!
   \********************************************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -61591,8 +61597,8 @@ var opts = {};
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\Users\Windows-10\Desktop\laravue\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\Users\Windows-10\Desktop\laravue\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\Users\User\Desktop\laravue\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\Users\User\Desktop\laravue\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
