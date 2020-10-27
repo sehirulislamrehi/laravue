@@ -13,11 +13,19 @@ import roles from './components/RolesComponent'
 const routes = [
     {
         path : '/',
-        redirect : '/login'
+        redirect : '/login',
+        
     },
     {
         path : '/login',
-        component : login
+        component : login,
+        beforeEnter : (to, from, next ) => {
+            if( localStorage.getItem('token') ){
+                next('/admin');
+            }else{
+                next();
+            }
+        }
     },
     {
         path : '/register',

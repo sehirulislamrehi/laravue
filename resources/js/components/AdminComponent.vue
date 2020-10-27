@@ -28,12 +28,12 @@
 
             <v-list>
                 <!-- single item start -->
-                <v-list-item>
+                <v-list-item to="/admin">
                     <v-list-item-icon>
                         <v-icon>mdi-home</v-icon>
                     </v-list-item-icon>
 
-                    <v-list-item-title>Home</v-list-item-title>
+                    <v-list-item-title>Dashboard</v-list-item-title>
                 </v-list-item>
                 <!-- single item end -->
 
@@ -58,6 +58,16 @@
                     </v-list-item>
                 </v-list-group>
                 <!--- dropdown end -->
+
+                <v-list-item to="/admin/roles">
+                    <v-list-item-icon>
+                        <span class="material-icons">
+                            people_alt
+                        </span>
+                    </v-list-item-icon>
+
+                    <v-list-item-title>Roles</v-list-item-title>
+                </v-list-item>
 
                 <v-list-item @click="logout">
                     <v-list-item-icon>
