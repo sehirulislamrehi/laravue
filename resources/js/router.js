@@ -7,6 +7,7 @@ Vue.use(VueRouter);
 import login from './components/loginComponent'
 import admin from './components/AdminComponent'
 import register from './components/RegisterComponent'
+import roles from './components/RolesComponent'
 
 
 const routes = [
@@ -25,6 +26,13 @@ const routes = [
     {
         path : '/admin',
         component : admin,
+        children : [
+            {
+                path : 'roles',
+                component : roles,
+                name : 'roles',
+            }
+        ],
         beforeEnter : (to, from, next ) => {
             if( localStorage.getItem('token') ){
                 next();
@@ -32,7 +40,8 @@ const routes = [
                 next('/login');
             }
         }
-    }
+    },
+
 ];
 export default new VueRouter({
     routes

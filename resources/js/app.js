@@ -2,6 +2,7 @@
 //import pluggins
 import vuetify from './vuetify';
 import router from './router';
+import bootstrap from './bootstrap';
 
 window.Vue = require('vue');
 
