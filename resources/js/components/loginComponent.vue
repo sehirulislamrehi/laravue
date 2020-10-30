@@ -13,7 +13,7 @@
                                 color="deep-purple accent-4"
                             ></v-progress-linear>
                             <!-- form start -->
-                            <v-form ref="form" >
+                            <v-form ref="form">
                                 <v-text-field
                                     v-model="email"
                                     :rules="emailRules"

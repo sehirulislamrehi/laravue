@@ -1,58 +1,60 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
+import Vue from "vue";
+import VueRouter from "vue-router";
 
 Vue.use(VueRouter);
 
-
-import login from './components/loginComponent'
-import admin from './components/AdminComponent'
-import register from './components/RegisterComponent'
-import roles from './components/RolesComponent'
-
+import login from "./components/loginComponent";
+import admin from "./components/AdminComponent";
+import register from "./components/RegisterComponent";
+import roles from "./components/RolesComponent";
 
 const routes = [
     {
-        path : '/',
-        redirect : '/login',
-        
+        path: "/",
+        redirect: "/login"
     },
     {
-        path : '/login',
-        component : login,
-        beforeEnter : (to, from, next ) => {
-            if( localStorage.getItem('token') ){
-                next('/admin');
-            }else{
+        path: "/login",
+        component: login,
+        beforeEnter: (to, from, next) => {
+            if (localStorage.getItem("token")) {
+                next("/admin");
+            } else {
                 next();
             }
         }
     },
     {
-        path : '/register',
-        component : register
+        path: "/register",
+        component: register
     },
     {
-        path : '/admin',
-        component : admin,
-        children : [
+        path: "/admin",
+        component: admin,
+        name : "admin",
+        children: [
             {
-                path : 'roles',
-                component : roles,
-                name : 'roles',
+                path: "roles",
+                component: roles,
+                name: "roles"
             }
         ],
-        beforeEnter : (to, from, next ) => {
-            if( localStorage.getItem('token') ){
+        beforeEnter: (to, from, next) => {
+            if (localStorage.getItem("token")) {
                 next();
-            }else{
-                next('/login');
+            } else {
+                next("/login");
             }
         }
-    },
-
+    }
 ];
-export default new VueRouter({
-    routes
+
+const router = new VueRouter({ routes });
+
+router.beforeEach((to, from, next) => {
+    const token = localStorage.getItem("token") || null;
+    window.axios.defaults.headers["Authorization"] = "Bearer " + token;
+    next();
 });
 
-
+export default router;

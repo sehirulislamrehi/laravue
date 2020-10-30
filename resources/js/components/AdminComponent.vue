@@ -126,7 +126,9 @@ export default {
     data: () => ({
         cards: ["Today"],
         drawer: true,
-        cruds: [["Create", "mdi-plus-outline"]],
+        cruds: [
+            ["Create", "mdi-plus-outline"],
+            ],
         snackbar: true
     }),
     mounted(){
