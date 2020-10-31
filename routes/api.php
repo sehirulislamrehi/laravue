@@ -27,4 +27,5 @@ Route::post('/register', [UserController::class, 'register'])->name('register');
 
 Route::group(['middleware'=> ['auth:api'] ], function () {
     Route::get('/roles', [RoleController::class, 'index'])->name('roles');
+    Route::post('/roles/add', [RoleController::class, 'store'])->name('add');
 });

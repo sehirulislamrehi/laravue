@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Role\Add;
 use App\Models\Role;
 use Illuminate\Http\Request;
 
@@ -19,15 +20,6 @@ class RoleController extends Controller
         return response()->json(['roles'=>$role],200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -35,9 +27,13 @@ class RoleController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Add $request)
     {
-        //
+        $role = new Role();
+        $role->name  = $request->name;
+        if($role->save()):
+            return response()->json(['role'=>$role], 200);
+        endif;
     }
 
     /**

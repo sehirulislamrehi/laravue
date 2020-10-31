@@ -2300,41 +2300,198 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      desserts: [{
-        name: "Frozen Yogurt",
-        calories: 159
+      search: "",
+      dialog: false,
+      dialogDelete: false,
+      headers: [{
+        text: "Id",
+        align: "start",
+        sortable: false,
+        value: "id"
       }, {
-        name: "Ice cream sandwich",
-        calories: 237
+        text: "Name",
+        value: "name"
       }, {
-        name: "Eclair",
-        calories: 262
+        text: "Created At",
+        value: "created_at"
       }, {
-        name: "Cupcake",
-        calories: 305
+        text: "Updated At",
+        value: "updated_at"
       }, {
-        name: "Gingerbread",
-        calories: 356
-      }, {
-        name: "Jelly bean",
-        calories: 375
-      }, {
-        name: "Lollipop",
-        calories: 392
-      }, {
-        name: "Honeycomb",
-        calories: 408
-      }, {
-        name: "Donut",
-        calories: 452
-      }, {
-        name: "KitKat",
-        calories: 518
-      }]
+        text: "Actions",
+        value: "actions",
+        sortable: false
+      }],
+      roles: [],
+      editedIndex: -1,
+      editedItem: {
+        name: ""
+      },
+      defaultItem: {
+        name: ""
+      }
     };
+  },
+  computed: {
+    formTitle: function formTitle() {
+      return this.editedIndex === -1 ? "New Role" : "Edit Role";
+    }
+  },
+  watch: {
+    dialog: function dialog(val) {
+      val || this.close();
+    },
+    dialogDelete: function dialogDelete(val) {
+      val || this.closeDelete();
+    }
+  },
+  created: function created() {
+    this.initialize();
+  },
+  methods: {
+    initialize: function initialize() {
+      var _this = this;
+
+      // Add a request interceptor
+      axios.interceptors.request.use(function (config) {
+        // Do something before request is sent
+        return config;
+      }, function (error) {
+        // Do something with request error
+        return Promise.reject(error);
+      }); // Add a response interceptor
+
+      axios.interceptors.response.use(function (response) {
+        // Any status code that lie within the range of 2xx cause this function to trigger
+        // Do something with response data
+        return response;
+      }, function (error) {
+        // Any status codes that falls outside the range of 2xx cause this function to trigger
+        // Do something with response error
+        return Promise.reject(error);
+      });
+      axios.get("/api/roles", {}).then(function (res) {
+        _this.roles = res.data.roles;
+      });
+    },
+    editItem: function editItem(item) {
+      this.editedIndex = this.roles.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.dialog = true;
+    },
+    deleteItem: function deleteItem(item) {
+      this.editedIndex = this.roles.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.dialogDelete = true;
+    },
+    deleteItemConfirm: function deleteItemConfirm() {
+      this.roles.splice(this.editedIndex, 1);
+      this.closeDelete();
+    },
+    close: function close() {
+      var _this2 = this;
+
+      this.dialog = false;
+      this.$nextTick(function () {
+        _this2.editedItem = Object.assign({}, _this2.defaultItem);
+        _this2.editedIndex = -1;
+      });
+    },
+    closeDelete: function closeDelete() {
+      var _this3 = this;
+
+      this.dialogDelete = false;
+      this.$nextTick(function () {
+        _this3.editedItem = Object.assign({}, _this3.defaultItem);
+        _this3.editedIndex = -1;
+      });
+    },
+    save: function save() {
+      var _this4 = this;
+
+      if (this.editedIndex > -1) {
+        Object.assign(this.roles[this.editedIndex], this.editedItem);
+      } else {
+        axios.post("/api/roles/add", {
+          name: this.editedItem.name
+        }).then(function (res) {
+          console.log(res);
+
+          _this4.roles.push(res.data.role);
+        })["catch"](function (err) {
+          return console.dir(err.response);
+        });
+      }
+
+      this.close();
+    }
   }
 });
 
@@ -2535,7 +2692,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.login-card[data-v-51f045bf] {\n    padding: 30px;\n}\n.login_component[data-v-51f045bf] {\n    height: 100vh;\n    position: relative;\n    background: #9fa8da;\n}\n.login_component .container[data-v-51f045bf] {\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n}\n", ""]);
+exports.push([module.i, "\n.login-card[data-v-51f045bf] {\r\n    padding: 30px;\n}\n.login_component[data-v-51f045bf] {\r\n    height: 100vh;\r\n    position: relative;\r\n    background: #9fa8da;\n}\n.login_component .container[data-v-51f045bf] {\r\n    position: absolute;\r\n    top: 50%;\r\n    left: 50%;\r\n    transform: translate(-50%, -50%);\n}\r\n", ""]);
 
 // exports
 
@@ -2554,7 +2711,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.login-card[data-v-413f4ec2] {\n    padding: 30px;\n}\n.login_component[data-v-413f4ec2] {\n    height: 100vh;\n    position: relative;\n    background: #9fa8da;\n}\n.login_component .container[data-v-413f4ec2] {\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n}\n", ""]);
+exports.push([module.i, "\n.login-card[data-v-413f4ec2] {\r\n    padding: 30px;\n}\n.login_component[data-v-413f4ec2] {\r\n    height: 100vh;\r\n    position: relative;\r\n    background: #9fa8da;\n}\n.login_component .container[data-v-413f4ec2] {\r\n    position: absolute;\r\n    top: 50%;\r\n    left: 50%;\r\n    transform: translate(-50%, -50%);\n}\r\n", ""]);
 
 // exports
 
@@ -24031,39 +24188,297 @@ var render = function() {
     "v-app",
     [
       _c(
-        "v-data-table",
-        {
-          staticClass: "elevation-1",
-          attrs: { items: _vm.desserts, "items-per-page": 5 }
-        },
+        "v-card-title",
         [
-          _c("thead", [
-            _c("tr", [
-              _c("th", { staticClass: "text-left" }, [
-                _vm._v("\n                        Name\n                    ")
-              ]),
-              _vm._v(" "),
-              _c("th", { staticClass: "text-left" }, [
-                _vm._v(
-                  "\n                        Calories\n                    "
-                )
-              ])
-            ])
-          ]),
-          _vm._v(" "),
-          _c(
-            "tbody",
-            _vm._l(_vm.desserts, function(item) {
-              return _c("tr", { key: item.name }, [
-                _c("td", [_vm._v(_vm._s(item.name))]),
-                _vm._v(" "),
-                _c("td", [_vm._v(_vm._s(item.calories))])
-              ])
-            }),
-            0
-          )
-        ]
-      )
+          _c("v-text-field", {
+            attrs: {
+              "append-icon": "mdi-magnify",
+              label: "Search",
+              "single-line": "",
+              "hide-details": ""
+            },
+            model: {
+              value: _vm.search,
+              callback: function($$v) {
+                _vm.search = $$v
+              },
+              expression: "search"
+            }
+          })
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c("v-data-table", {
+        staticClass: "elevation-1",
+        attrs: {
+          headers: _vm.headers,
+          items: _vm.roles,
+          "sort-by": "calories",
+          search: _vm.search
+        },
+        scopedSlots: _vm._u(
+          [
+            {
+              key: "top",
+              fn: function() {
+                return [
+                  _c(
+                    "v-toolbar",
+                    { attrs: { flat: "" } },
+                    [
+                      _c("v-toolbar-title", [_vm._v("Roles Table")]),
+                      _vm._v(" "),
+                      _c("v-divider", {
+                        staticClass: "mx-4",
+                        attrs: { inset: "", vertical: "" }
+                      }),
+                      _vm._v(" "),
+                      _c("v-spacer"),
+                      _vm._v(" "),
+                      _c(
+                        "v-dialog",
+                        {
+                          attrs: { "max-width": "500px" },
+                          scopedSlots: _vm._u([
+                            {
+                              key: "activator",
+                              fn: function(ref) {
+                                var on = ref.on
+                                var attrs = ref.attrs
+                                return [
+                                  _c(
+                                    "v-btn",
+                                    _vm._g(
+                                      _vm._b(
+                                        {
+                                          staticClass: "mb-2",
+                                          attrs: { color: "primary", dark: "" }
+                                        },
+                                        "v-btn",
+                                        attrs,
+                                        false
+                                      ),
+                                      on
+                                    ),
+                                    [
+                                      _vm._v(
+                                        "\n              New Role\n            "
+                                      )
+                                    ]
+                                  )
+                                ]
+                              }
+                            }
+                          ]),
+                          model: {
+                            value: _vm.dialog,
+                            callback: function($$v) {
+                              _vm.dialog = $$v
+                            },
+                            expression: "dialog"
+                          }
+                        },
+                        [
+                          _vm._v(" "),
+                          _c(
+                            "v-card",
+                            [
+                              _c("v-card-title", [
+                                _c("span", { staticClass: "headline" }, [
+                                  _vm._v(_vm._s(_vm.formTitle))
+                                ])
+                              ]),
+                              _vm._v(" "),
+                              _c(
+                                "v-card-text",
+                                [
+                                  _c(
+                                    "v-container",
+                                    [
+                                      _c(
+                                        "v-row",
+                                        [
+                                          _c(
+                                            "v-col",
+                                            { attrs: { sm: "6", md: "12" } },
+                                            [
+                                              _c("v-text-field", {
+                                                attrs: { label: "Role name" },
+                                                model: {
+                                                  value: _vm.editedItem.name,
+                                                  callback: function($$v) {
+                                                    _vm.$set(
+                                                      _vm.editedItem,
+                                                      "name",
+                                                      $$v
+                                                    )
+                                                  },
+                                                  expression: "editedItem.name"
+                                                }
+                                              })
+                                            ],
+                                            1
+                                          )
+                                        ],
+                                        1
+                                      )
+                                    ],
+                                    1
+                                  )
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-card-actions",
+                                [
+                                  _c("v-spacer"),
+                                  _vm._v(" "),
+                                  _c(
+                                    "v-btn",
+                                    {
+                                      attrs: {
+                                        color: "blue darken-1",
+                                        text: ""
+                                      },
+                                      on: { click: _vm.close }
+                                    },
+                                    [
+                                      _vm._v(
+                                        "\n                Cancel\n              "
+                                      )
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "v-btn",
+                                    {
+                                      attrs: {
+                                        color: "blue darken-1",
+                                        text: ""
+                                      },
+                                      on: { click: _vm.save }
+                                    },
+                                    [_vm._v(" Save ")]
+                                  )
+                                ],
+                                1
+                              )
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-dialog",
+                        {
+                          attrs: { "max-width": "500px" },
+                          model: {
+                            value: _vm.dialogDelete,
+                            callback: function($$v) {
+                              _vm.dialogDelete = $$v
+                            },
+                            expression: "dialogDelete"
+                          }
+                        },
+                        [
+                          _c(
+                            "v-card",
+                            [
+                              _c("v-card-title", { staticClass: "headline" }, [
+                                _vm._v(
+                                  "Are you sure you want to delete this item?"
+                                )
+                              ]),
+                              _vm._v(" "),
+                              _c(
+                                "v-card-actions",
+                                [
+                                  _c("v-spacer"),
+                                  _vm._v(" "),
+                                  _c(
+                                    "v-btn",
+                                    {
+                                      attrs: {
+                                        color: "blue darken-1",
+                                        text: ""
+                                      },
+                                      on: { click: _vm.closeDelete }
+                                    },
+                                    [_vm._v("Cancel")]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "v-btn",
+                                    {
+                                      attrs: {
+                                        color: "blue darken-1",
+                                        text: ""
+                                      },
+                                      on: { click: _vm.deleteItemConfirm }
+                                    },
+                                    [_vm._v("OK")]
+                                  ),
+                                  _vm._v(" "),
+                                  _c("v-spacer")
+                                ],
+                                1
+                              )
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  )
+                ]
+              },
+              proxy: true
+            },
+            {
+              key: "item.actions",
+              fn: function(ref) {
+                var item = ref.item
+                return [
+                  _c(
+                    "v-icon",
+                    {
+                      staticClass: "mr-2",
+                      attrs: { small: "" },
+                      on: {
+                        click: function($event) {
+                          return _vm.editItem(item)
+                        }
+                      }
+                    },
+                    [_vm._v(" mdi-pencil ")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-icon",
+                    {
+                      attrs: { small: "" },
+                      on: {
+                        click: function($event) {
+                          return _vm.deleteItem(item)
+                        }
+                      }
+                    },
+                    [_vm._v(" mdi-delete ")]
+                  )
+                ]
+              }
+            }
+          ],
+          null,
+          true
+        )
+      })
     ],
     1
   )
@@ -83873,8 +84288,8 @@ var opts = {};
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\Users\User\Desktop\laravue\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\Users\User\Desktop\laravue\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\Users\Windows-10\Desktop\laravue\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\Users\Windows-10\Desktop\laravue\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
