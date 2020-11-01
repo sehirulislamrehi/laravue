@@ -18,8 +18,8 @@ class UserController extends Controller
         $user = User::where('email', $email)->first();
 
         if (Hash::check($request->password, $user->password)) :
-            if ($user) :
-                $token = bcrypt($request->password);
+            if ($user) :  
+                $token = Str::random(80);
                 $user->api_token = $token;
                 $user->save();
                 return response()->json(['token' => $token, 'user'=>$user], 200);
@@ -53,5 +53,9 @@ class UserController extends Controller
         else :
             return response()->json(['status', 'Registration Failed'], 403);
         endif;
+    }
+
+    public function verify(Request $request){
+        return $request->user()->only('name','email');
     }
 }

@@ -16,9 +16,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+
 
 //login route
 Route::post('/login', [UserController::class, 'login'])->name('login');
@@ -28,4 +26,6 @@ Route::post('/register', [UserController::class, 'register'])->name('register');
 Route::group(['middleware'=> ['auth:api'] ], function () {
     Route::get('/roles', [RoleController::class, 'index'])->name('roles');
     Route::post('/roles/add', [RoleController::class, 'store'])->name('add');
+    Route::post('/roles/update/{id}', [RoleController::class, 'update'])->name('update');
+    Route::get('/verify',[UserController::class,'verify']);
 });

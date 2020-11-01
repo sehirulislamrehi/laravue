@@ -40,11 +40,9 @@ const routes = [
             }
         ],
         beforeEnter: (to, from, next) => {
-            if (localStorage.getItem("token")) {
-                next();
-            } else {
-                next("/login");
-            }
+            axios.get('api/verify')
+            .then( res => next())
+            .catch( err => next('/login') ) 
         }
     }
 ];

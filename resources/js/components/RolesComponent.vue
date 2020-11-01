@@ -84,10 +84,26 @@
       </template>
     </v-data-table>
 
+<!-- snackbar start -->
+        <v-snackbar v-model="snackbar">
+            {{ text }}
 
+            <template v-slot:action="{ attrs }">
+                <v-btn
+                    color="pink"
+                    text
+                    v-bind="attrs"
+                    @click="snackbar = false"
+                >
+                    Close
+                </v-btn>
+            </template>
+        </v-snackbar>
+        <!-- snackbar end -->
 
     
   </v-app>
+  
 </template>
 
 <script>
@@ -96,6 +112,8 @@ export default {
     search: "",
     dialog: false,
     dialogDelete: false,
+    snackbar: false,
+    text : "",
     headers: [
       {
         text: "Id",
@@ -204,7 +222,21 @@ export default {
 
     save() {
       if (this.editedIndex > -1) {
-        Object.assign(this.roles[this.editedIndex], this.editedItem);
+        axios.post('api/roles/update/'+this.editedItem.id, {
+          'name' : this.editedItem.name
+        })
+        .then( res => {
+          Object.assign(this.roles[this.editedItem.id], res.data.role);
+        })
+        .catch( err => {
+          this.snackbar = true
+          let error = err.response.data.errors.name;
+          for( let x in error ){
+            this.text = error[x]
+          }
+          
+        })
+        
       } else {
         axios
           .post("/api/roles/add", {

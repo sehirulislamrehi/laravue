@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Role\Add;
+use App\Http\Requests\Role\Update;
 use App\Models\Role;
 use Illuminate\Http\Request;
 
@@ -37,37 +38,19 @@ class RoleController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Update $request, $id)
     {
-        //
+        $role = Role::find($id);
+        $role->name = $request->name;
+        if($role->save()):
+            return response()->json(['role'=>$role],200);
+        endif;
     }
 
     /**

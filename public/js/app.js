@@ -2364,12 +2364,30 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       search: "",
       dialog: false,
       dialogDelete: false,
+      snackbar: false,
+      text: "",
       headers: [{
         text: "Id",
         align: "start",
@@ -2477,7 +2495,18 @@ __webpack_require__.r(__webpack_exports__);
       var _this4 = this;
 
       if (this.editedIndex > -1) {
-        Object.assign(this.roles[this.editedIndex], this.editedItem);
+        axios.post('api/roles/update/' + this.editedItem.id, {
+          'name': this.editedItem.name
+        }).then(function (res) {
+          Object.assign(_this4.roles[_this4.editedItem.id], res.data.role);
+        })["catch"](function (err) {
+          _this4.snackbar = true;
+          var error = err.response.data.errors.name;
+
+          for (var x in error) {
+            _this4.text = error[x];
+          }
+        });
       } else {
         axios.post("/api/roles/add", {
           name: this.editedItem.name
@@ -24263,7 +24292,7 @@ var render = function() {
                                     ),
                                     [
                                       _vm._v(
-                                        "\n              New Role\n            "
+                                        "\n                New Role\n              "
                                       )
                                     ]
                                   )
@@ -24346,7 +24375,7 @@ var render = function() {
                                     },
                                     [
                                       _vm._v(
-                                        "\n                Cancel\n              "
+                                        "\n                  Cancel\n                "
                                       )
                                     ]
                                   ),
@@ -24478,7 +24507,48 @@ var render = function() {
           null,
           true
         )
-      })
+      }),
+      _vm._v(" "),
+      _c(
+        "v-snackbar",
+        {
+          scopedSlots: _vm._u([
+            {
+              key: "action",
+              fn: function(ref) {
+                var attrs = ref.attrs
+                return [
+                  _c(
+                    "v-btn",
+                    _vm._b(
+                      {
+                        attrs: { color: "pink", text: "" },
+                        on: {
+                          click: function($event) {
+                            _vm.snackbar = false
+                          }
+                        }
+                      },
+                      "v-btn",
+                      attrs,
+                      false
+                    ),
+                    [_vm._v("\n                    Close\n                ")]
+                  )
+                ]
+              }
+            }
+          ]),
+          model: {
+            value: _vm.snackbar,
+            callback: function($$v) {
+              _vm.snackbar = $$v
+            },
+            expression: "snackbar"
+          }
+        },
+        [_vm._v("\n            " + _vm._s(_vm.text) + "\n\n            ")]
+      )
     ],
     1
   )
@@ -84222,11 +84292,11 @@ var routes = [{
     name: "roles"
   }],
   beforeEnter: function beforeEnter(to, from, next) {
-    if (localStorage.getItem("token")) {
-      next();
-    } else {
-      next("/login");
-    }
+    axios.get('api/verify').then(function (res) {
+      return next();
+    })["catch"](function (err) {
+      return next('/login');
+    });
   }
 }];
 var router = new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
