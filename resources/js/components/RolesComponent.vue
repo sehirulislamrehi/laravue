@@ -58,6 +58,7 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
+
           <v-dialog v-model="dialogDelete" max-width="500px">
             <v-card>
               <v-card-title class="headline"
@@ -68,7 +69,7 @@
                 <v-btn color="blue darken-1" text @click="closeDelete"
                   >Cancel</v-btn
                 >
-                <v-btn color="blue darken-1" text @click="deleteItemConfirm"
+                <v-btn color="blue darken-1" text @click="deleteItemConfirm()"
                   >OK</v-btn
                 >
                 <v-spacer></v-spacer>
@@ -116,15 +117,15 @@ export default {
     text : "",
     headers: [
       {
-        text: "Id",
+        text: "#Id",
         align: "start",
-        sortable: false,
-        value: "id",
+        sortable: true,
+        value: '',
       },
       { text: "Name", value: "name" },
       { text: "Created At", value: "created_at" },
       { text: "Updated At", value: "updated_at" },
-      { text: "Actions", value: "actions", sortable: false },
+      { text: "Actions", value: "actions", sortable: true },
     ],
     roles: [],
     editedIndex: -1,
@@ -196,10 +197,19 @@ export default {
     deleteItem(item) {
       this.editedIndex = this.roles.indexOf(item);
       this.editedItem = Object.assign({}, item);
+      
       this.dialogDelete = true;
     },
 
     deleteItemConfirm() {
+      axios.post('/api/roles/delete/'+this.editedItem.id)
+      .then(res => {
+        this.snackbar = true
+        this.text = 'Item Deleted Successfully'
+      })
+      .catch(err => {
+
+      })
       this.roles.splice(this.editedIndex, 1);
       this.closeDelete();
     },
@@ -222,19 +232,16 @@ export default {
 
     save() {
       if (this.editedIndex > -1) {
-        axios.post('api/roles/update/'+this.editedItem.id, {
+        let id = this.editedItem.id
+        axios.post('api/roles/update/'+id, {
           'name' : this.editedItem.name
-        })
-        .then( res => {
-          Object.assign(this.roles[this.editedItem.id], res.data.role);
+        }).then( res => {
+          this.snackbar = true,
+          this.text = "Item Updated Successfully"
+          Object.assign(this.roles[id - 1 ], res.data.role)
         })
         .catch( err => {
-          this.snackbar = true
-          let error = err.response.data.errors.name;
-          for( let x in error ){
-            this.text = error[x]
-          }
-          
+          let error = err.response.data.message;
         })
         
       } else {
@@ -243,10 +250,17 @@ export default {
             name: this.editedItem.name,
           })
           .then((res) => {
-            console.log(res)
+            this.snackbar = true,
+            this.text = "Item Added Successfully"
             this.roles.push(res.data.role)
           })
-          .catch((err) => console.dir(err.response));
+          .catch((err) => {
+              let errors = err.response.data.errors.name
+              for( let x in errors ){
+                this.snackbar = true
+                this.text = errors[x]
+              }
+          });
       }
       this.close();
     },

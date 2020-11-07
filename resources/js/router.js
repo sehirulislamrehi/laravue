@@ -7,6 +7,7 @@ import login from "./components/loginComponent";
 import admin from "./components/AdminComponent";
 import register from "./components/RegisterComponent";
 import roles from "./components/RolesComponent";
+import crud from './components/CrudComponent';
 
 const routes = [
     {
@@ -37,6 +38,11 @@ const routes = [
                 path: "roles",
                 component: roles,
                 name: "roles"
+            },
+            {
+                path : 'crud',
+                component : crud,
+                name : 'crud',
             }
         ],
         beforeEnter: (to, from, next) => {
