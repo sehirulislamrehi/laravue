@@ -32,5 +32,6 @@ Route::group(['middleware'=> ['auth:api'] ], function () {
     Route::post('/roles/delete/{id}', [RoleController::class, 'destroy'])->name('delete');
     Route::get('/verify',[UserController::class,'verify']);
 
+    Route::get('/cruds/all',[CrudController::class,'all'])->name('all');
     Route::post('/cruds/add',[CrudController::class,'store'])->name('add');
 });

@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\File;
 
 class CrudController extends Controller
 {
+    public function all(){
+        $crud = Crud::all();
+        return response()->json(['crud'=> $crud],200);
+    }
     public function store(Request $request){
         $request->validate([
             'name' => 'required',
@@ -29,9 +33,7 @@ class CrudController extends Controller
         endif;
 
         if($crud->save()):
-            return response(['crud',$crud],200);
+            return response(['crud' =>$crud],200);
         endif;
-
-
     }
 }

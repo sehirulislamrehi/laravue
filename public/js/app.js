@@ -2226,6 +2226,73 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 Object(vee_validate__WEBPACK_IMPORTED_MODULE_1__["setInteractionMode"])("eager");
@@ -2243,27 +2310,60 @@ Object(vee_validate__WEBPACK_IMPORTED_MODULE_1__["extend"])("max", _objectSpread
   data: function data() {
     return {
       add_dialog: false,
+      edit_dialog: false,
       dialog: false,
-      desserts: [],
+      cruds: [],
       name: "",
-      image: ""
+      image: "",
+      public_image: null,
+      editedItem: {
+        name: "",
+        image: ""
+      }
     };
   },
-  onFileChange: function onFileChange(e) {
-    console.log(e.target.files[0]);
-    this.file = e.target.files[0];
+  created: function created() {
+    this.initialize();
+  },
+  watch: {
+    cruds: function cruds(v) {}
   },
   methods: {
+    initialize: function initialize() {
+      var _this = this;
+
+      axios.get("/api/cruds/all", {}).then(function (res) {
+        _this.cruds = res.data.crud;
+
+        for (var x in res.data.crud) {
+          _this.public_image = res.data.crud[x].image;
+        }
+      })["catch"](function (err) {});
+    },
     submit: function submit() {
       this.$refs.observer.validate();
     },
+    onFileChange: function onFileChange(e) {
+      this.image = e;
+    },
     add: function add() {
-      axios.post('/api/cruds/add', {
-        name: this.name,
-        image: this.image.name
+      var _this2 = this;
+
+      var form = new FormData();
+      form.append("image", this.image);
+      form.append("name", this.name);
+      axios.post("/api/cruds/add", form, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
       }).then(function (res) {
-        console.log(res);
+        _this2.cruds.push(res.data.crud);
       })["catch"](function (err) {});
+    },
+    edit: function edit(item) {
+      this.editedItem = Object.assign({}, item);
+      console.log(this.editedItem);
+      this.edit_dialog = true;
     }
   }
 });
@@ -2939,7 +3039,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.small-btn[data-v-768f9b84] {\r\n    width: 150px;\n}\r\n", ""]);
+exports.push([module.i, "\n.small-btn[data-v-768f9b84] {\r\n  width: 150px;\n}\r\n", ""]);
 
 // exports
 
@@ -27041,7 +27141,7 @@ var render = function() {
                       ),
                       on
                     ),
-                    [_vm._v("\n                Add\n            ")]
+                    [_vm._v("\n        Add\n      ")]
                   )
                 ]
               }
@@ -27173,7 +27273,7 @@ var render = function() {
                                   },
                                   [
                                     _vm._v(
-                                      "\n                            submit\n                        "
+                                      "\n              submit\n            "
                                     )
                                   ]
                                 )
@@ -27204,7 +27304,7 @@ var render = function() {
                         }
                       }
                     },
-                    [_vm._v("\n                    Close\n                ")]
+                    [_vm._v("\n          Close\n        ")]
                   )
                 ],
                 1
@@ -27217,7 +27317,7 @@ var render = function() {
       ),
       _vm._v(" "),
       _c("v-simple-table", {
-        attrs: { "fixed-header": "", height: "300px" },
+        attrs: { "fixed-header": "", loading: true },
         scopedSlots: _vm._u([
           {
             key: "default",
@@ -27227,7 +27327,7 @@ var render = function() {
                   _c("tr", [
                     _c("th", { staticClass: "text-left" }, [_vm._v("Name")]),
                     _vm._v(" "),
-                    _c("th", { staticClass: "text-left" }, [_vm._v("Image")]),
+                    _c("th", { staticClass: "text-left" }, [_vm._v("image")]),
                     _vm._v(" "),
                     _c("th", { staticClass: "text-left" }, [_vm._v("Action")])
                   ])
@@ -27235,14 +27335,26 @@ var render = function() {
                 _vm._v(" "),
                 _c(
                   "tbody",
-                  _vm._l(_vm.desserts, function(item) {
+                  _vm._l(_vm.cruds, function(item) {
                     return _c(
                       "tr",
-                      { key: item.name },
+                      { key: item.id },
                       [
                         _c("td", [_vm._v(_vm._s(item.name))]),
                         _vm._v(" "),
-                        _c("td", [_vm._v(_vm._s(item.calories))]),
+                        _c(
+                          "td",
+                          [
+                            _c("v-img", {
+                              attrs: {
+                                "max-height": "100",
+                                "max-width": "100",
+                                src: "/images/crud/" + item.image
+                              }
+                            })
+                          ],
+                          1
+                        ),
                         _vm._v(" "),
                         _c(
                           "td",
@@ -27254,20 +27366,29 @@ var render = function() {
                                 attrs: { small: "" },
                                 on: {
                                   click: function($event) {
-                                    _vm.dialog = true
+                                    return _vm.edit(item)
                                   }
                                 }
                               },
                               [
                                 _vm._v(
-                                  "\n                            mdi-pencil\n                        "
+                                  "\n              mdi-pencil\n            "
                                 )
                               ]
                             ),
                             _vm._v(" "),
-                            _c("v-icon", { attrs: { small: "" } }, [
-                              _vm._v(" mdi-delete ")
-                            ])
+                            _c(
+                              "v-icon",
+                              {
+                                attrs: { small: "" },
+                                on: {
+                                  click: function($event) {
+                                    return _vm.deleteCrud(item.id)
+                                  }
+                                }
+                              },
+                              [_vm._v(" mdi-delete ")]
+                            )
                           ],
                           1
                         ),
@@ -27277,11 +27398,11 @@ var render = function() {
                           {
                             attrs: { persistent: "", "max-width": "600px" },
                             model: {
-                              value: _vm.dialog,
+                              value: _vm.edit_dialog,
                               callback: function($$v) {
-                                _vm.dialog = $$v
+                                _vm.edit_dialog = $$v
                               },
-                              expression: "dialog"
+                              expression: "edit_dialog"
                             }
                           },
                           [
@@ -27290,11 +27411,197 @@ var render = function() {
                               [
                                 _c("v-card-title", [
                                   _c("span", { staticClass: "headline" }, [
-                                    _vm._v("User Profile")
+                                    _vm._v("Edit")
                                   ])
                                 ]),
                                 _vm._v(" "),
-                                _c("v-card-text"),
+                                _c(
+                                  "v-card-text",
+                                  [
+                                    _c("validation-observer", {
+                                      ref: "observer",
+                                      refInFor: true,
+                                      scopedSlots: _vm._u(
+                                        [
+                                          {
+                                            key: "default",
+                                            fn: function(ref) {
+                                              var invalid = ref.invalid
+                                              return [
+                                                _c(
+                                                  "form",
+                                                  {
+                                                    attrs: {
+                                                      enctype:
+                                                        "multipart/form-data",
+                                                      method: "post"
+                                                    },
+                                                    on: {
+                                                      submit: function($event) {
+                                                        $event.preventDefault()
+                                                        return _vm.submit(
+                                                          $event
+                                                        )
+                                                      }
+                                                    }
+                                                  },
+                                                  [
+                                                    _c("validation-provider", {
+                                                      attrs: {
+                                                        name: "Name",
+                                                        rules: "required|max:10"
+                                                      },
+                                                      scopedSlots: _vm._u(
+                                                        [
+                                                          {
+                                                            key: "default",
+                                                            fn: function(ref) {
+                                                              var errors =
+                                                                ref.errors
+                                                              return [
+                                                                _c(
+                                                                  "v-text-field",
+                                                                  {
+                                                                    attrs: {
+                                                                      counter: 10,
+                                                                      "error-messages": errors,
+                                                                      label:
+                                                                        "Name",
+                                                                      required:
+                                                                        "",
+                                                                      value: ""
+                                                                    },
+                                                                    model: {
+                                                                      value:
+                                                                        _vm
+                                                                          .editedItem
+                                                                          .name,
+                                                                      callback: function(
+                                                                        $$v
+                                                                      ) {
+                                                                        _vm.$set(
+                                                                          _vm.editedItem,
+                                                                          "name",
+                                                                          $$v
+                                                                        )
+                                                                      },
+                                                                      expression:
+                                                                        "editedItem.name"
+                                                                    }
+                                                                  }
+                                                                )
+                                                              ]
+                                                            }
+                                                          }
+                                                        ],
+                                                        null,
+                                                        true
+                                                      )
+                                                    }),
+                                                    _vm._v(" "),
+                                                    _c("validation-provider", {
+                                                      attrs: {
+                                                        name: "image",
+                                                        rules: "required"
+                                                      },
+                                                      scopedSlots: _vm._u(
+                                                        [
+                                                          {
+                                                            key: "default",
+                                                            fn: function(ref) {
+                                                              var errors =
+                                                                ref.errors
+                                                              return [
+                                                                _c("v-img", {
+                                                                  attrs: {
+                                                                    "max-height":
+                                                                      "100",
+                                                                    "max-width":
+                                                                      "100",
+                                                                    src:
+                                                                      "/images/crud/" +
+                                                                      _vm
+                                                                        .editedItem
+                                                                        .image
+                                                                  }
+                                                                }),
+                                                                _vm._v(" "),
+                                                                _c(
+                                                                  "v-file-input",
+                                                                  {
+                                                                    attrs: {
+                                                                      "show-size":
+                                                                        "",
+                                                                      label:
+                                                                        "File input",
+                                                                      "error-messages": errors,
+                                                                      required:
+                                                                        "",
+                                                                      type:
+                                                                        "file"
+                                                                    },
+                                                                    on: {
+                                                                      change:
+                                                                        _vm.onFileChange
+                                                                    },
+                                                                    model: {
+                                                                      value:
+                                                                        _vm
+                                                                          .editedItem
+                                                                          .image,
+                                                                      callback: function(
+                                                                        $$v
+                                                                      ) {
+                                                                        _vm.$set(
+                                                                          _vm.editedItem,
+                                                                          "image",
+                                                                          $$v
+                                                                        )
+                                                                      },
+                                                                      expression:
+                                                                        "editedItem.image"
+                                                                    }
+                                                                  }
+                                                                )
+                                                              ]
+                                                            }
+                                                          }
+                                                        ],
+                                                        null,
+                                                        true
+                                                      )
+                                                    }),
+                                                    _vm._v(" "),
+                                                    _c(
+                                                      "v-btn",
+                                                      {
+                                                        staticClass: "mr-4",
+                                                        attrs: {
+                                                          type: "submit",
+                                                          disabled: invalid
+                                                        },
+                                                        on: { click: _vm.add }
+                                                      },
+                                                      [
+                                                        _vm._v(
+                                                          "\n                      submit\n                    "
+                                                        )
+                                                      ]
+                                                    )
+                                                  ],
+                                                  1
+                                                )
+                                              ]
+                                            }
+                                          }
+                                        ],
+                                        null,
+                                        true
+                                      )
+                                    })
+                                  ],
+                                  1
+                                ),
                                 _vm._v(" "),
                                 _c(
                                   "v-card-actions",
@@ -27310,13 +27617,13 @@ var render = function() {
                                         },
                                         on: {
                                           click: function($event) {
-                                            _vm.dialog = false
+                                            _vm.edit_dialog = false
                                           }
                                         }
                                       },
                                       [
                                         _vm._v(
-                                          "\n                                    Close\n                                "
+                                          "\n                  Close\n                "
                                         )
                                       ]
                                     ),
@@ -27330,13 +27637,13 @@ var render = function() {
                                         },
                                         on: {
                                           click: function($event) {
-                                            _vm.dialog = false
+                                            _vm.edit_dialog = false
                                           }
                                         }
                                       },
                                       [
                                         _vm._v(
-                                          "\n                                    Save\n                                "
+                                          "\n                  Save\n                "
                                         )
                                       ]
                                     )
@@ -87897,8 +88204,8 @@ var opts = {};
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\Users\User\Desktop\laravue\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\Users\User\Desktop\laravue\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\Users\Windows-10\Desktop\laravue\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\Users\Windows-10\Desktop\laravue\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
