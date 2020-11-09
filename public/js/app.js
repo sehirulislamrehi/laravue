@@ -2293,6 +2293,28 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 Object(vee_validate__WEBPACK_IMPORTED_MODULE_1__["setInteractionMode"])("eager");
@@ -2310,12 +2332,17 @@ Object(vee_validate__WEBPACK_IMPORTED_MODULE_1__["extend"])("max", _objectSpread
   data: function data() {
     return {
       add_dialog: false,
+      timeout: 0,
       edit_dialog: false,
       dialog: false,
+      snackbar: false,
+      success: false,
+      text: "",
       cruds: [],
       name: "",
       image: "",
       public_image: null,
+      errors: [],
       editedItem: {
         name: "",
         image: ""
@@ -2358,12 +2385,47 @@ Object(vee_validate__WEBPACK_IMPORTED_MODULE_1__["extend"])("max", _objectSpread
         }
       }).then(function (res) {
         _this2.cruds.push(res.data.crud);
-      })["catch"](function (err) {});
+
+        _this2.text = "Information Added Successfully";
+        _this2.success = true;
+      })["catch"](function (err) {
+        for (var x in err.response.data.errors.name) {
+          _this2.errors.push({
+            message: err.response.data.errors.name[x]
+          });
+        }
+
+        _this2.snackbar = true;
+      });
     },
     edit: function edit(item) {
       this.editedItem = Object.assign({}, item);
-      console.log(this.editedItem);
       this.edit_dialog = true;
+    },
+    update: function update() {
+      var _this3 = this;
+
+      var id = this.editedItem.id;
+      var formData = new FormData();
+      formData.append("name", this.editedItem.name);
+      formData.append("image", this.editedItem.image);
+      axios.post("/api/cruds/update/" + id, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      }).then(function (res) {
+        _this3.success = true;
+        _this3.text = "Item Updated Successfully";
+        Object.assign(_this3.cruds[id - 1], res.data.crud);
+      })["catch"](function (err) {
+        for (var x in err.response.data.errors.name) {
+          _this3.errors.push({
+            message: err.response.data.errors.name[x]
+          });
+        }
+
+        _this3.snackbar = true;
+      });
     }
   }
 });
@@ -27463,7 +27525,6 @@ var render = function() {
                                                                   "v-text-field",
                                                                   {
                                                                     attrs: {
-                                                                      counter: 10,
                                                                       "error-messages": errors,
                                                                       label:
                                                                         "Name",
@@ -27535,8 +27596,6 @@ var render = function() {
                                                                       label:
                                                                         "File input",
                                                                       "error-messages": errors,
-                                                                      required:
-                                                                        "",
                                                                       type:
                                                                         "file"
                                                                     },
@@ -27580,11 +27639,13 @@ var render = function() {
                                                           type: "submit",
                                                           disabled: invalid
                                                         },
-                                                        on: { click: _vm.add }
+                                                        on: {
+                                                          click: _vm.update
+                                                        }
                                                       },
                                                       [
                                                         _vm._v(
-                                                          "\n                      submit\n                    "
+                                                          "\n                      Update\n                    "
                                                         )
                                                       ]
                                                     )
@@ -27626,26 +27687,6 @@ var render = function() {
                                           "\n                  Close\n                "
                                         )
                                       ]
-                                    ),
-                                    _vm._v(" "),
-                                    _c(
-                                      "v-btn",
-                                      {
-                                        attrs: {
-                                          color: "blue darken-1",
-                                          text: ""
-                                        },
-                                        on: {
-                                          click: function($event) {
-                                            _vm.edit_dialog = false
-                                          }
-                                        }
-                                      },
-                                      [
-                                        _vm._v(
-                                          "\n                  Save\n                "
-                                        )
-                                      ]
                                     )
                                   ],
                                   1
@@ -27667,9 +27708,99 @@ var render = function() {
             proxy: true
           }
         ])
-      })
+      }),
+      _vm._v(" "),
+      _vm._l(_vm.errors, function(error) {
+        return _c(
+          "v-snackbar",
+          {
+            key: error.message,
+            attrs: { timeout: _vm.timeout },
+            scopedSlots: _vm._u(
+              [
+                {
+                  key: "action",
+                  fn: function(ref) {
+                    var attrs = ref.attrs
+                    return [
+                      _c(
+                        "v-btn",
+                        _vm._b(
+                          {
+                            attrs: { color: "pink", text: "" },
+                            on: {
+                              click: function($event) {
+                                _vm.snackbar = false
+                              }
+                            }
+                          },
+                          "v-btn",
+                          attrs,
+                          false
+                        ),
+                        [_vm._v("\n        Close\n      ")]
+                      )
+                    ]
+                  }
+                }
+              ],
+              null,
+              true
+            ),
+            model: {
+              value: _vm.snackbar,
+              callback: function($$v) {
+                _vm.snackbar = $$v
+              },
+              expression: "snackbar"
+            }
+          },
+          [_vm._v("\n    " + _vm._s(error.message) + "\n\n    ")]
+        )
+      }),
+      _vm._v(" "),
+      _c(
+        "v-snackbar",
+        {
+          scopedSlots: _vm._u([
+            {
+              key: "action",
+              fn: function(ref) {
+                var attrs = ref.attrs
+                return [
+                  _c(
+                    "v-btn",
+                    _vm._b(
+                      {
+                        attrs: { color: "pink", text: "" },
+                        on: {
+                          click: function($event) {
+                            _vm.snackbar = false
+                          }
+                        }
+                      },
+                      "v-btn",
+                      attrs,
+                      false
+                    ),
+                    [_vm._v("\n        Close\n      ")]
+                  )
+                ]
+              }
+            }
+          ]),
+          model: {
+            value: _vm.success,
+            callback: function($$v) {
+              _vm.success = $$v
+            },
+            expression: "success"
+          }
+        },
+        [_vm._v("\n\n    " + _vm._s(_vm.text) + "\n\n    ")]
+      )
     ],
-    1
+    2
   )
 }
 var staticRenderFns = []
@@ -88204,8 +88335,8 @@ var opts = {};
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\Users\Windows-10\Desktop\laravue\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\Users\Windows-10\Desktop\laravue\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\Users\User\Desktop\laravue\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\Users\User\Desktop\laravue\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

@@ -125,7 +125,6 @@
                       >
                         <v-text-field
                           v-model="editedItem.name"
-                          :counter="10"
                           :error-messages="errors"
                           label="Name"
                           required
@@ -140,17 +139,16 @@
                         name="image"
                         rules="required"
                       >
-                      <v-img
-                        max-height="100"
-                        max-width="100"
-                        :src="'/images/crud/' + editedItem.image"
-                    ></v-img>
+                        <v-img
+                          max-height="100"
+                          max-width="100"
+                          :src="'/images/crud/' + editedItem.image"
+                        ></v-img>
                         <v-file-input
                           show-size
                           label="File input"
                           :error-messages="errors"
                           v-model="editedItem.image"
-                          required
                           type="file"
                           v-on:change="onFileChange"
                         ></v-file-input>
@@ -162,9 +160,9 @@
                         class="mr-4"
                         type="submit"
                         :disabled="invalid"
-                        @click="add"
+                        @click="update"
                       >
-                        submit
+                        Update
                       </v-btn>
                     </form>
                   </validation-observer>
@@ -178,13 +176,6 @@
                   >
                     Close
                   </v-btn>
-                  <v-btn
-                    color="blue darken-1"
-                    text
-                    @click="edit_dialog = false"
-                  >
-                    Save
-                  </v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
@@ -194,6 +185,37 @@
       </template>
     </v-simple-table>
     <!-- table row end -->
+
+    <!-- snackbar start -->
+    <v-snackbar
+      v-model="snackbar"
+      :timeout="timeout"
+      v-for="error in errors"
+      :key="error.message"
+    >
+      {{ error.message }}
+
+      <template v-slot:action="{ attrs }">
+        <v-btn color="pink" text v-bind="attrs" @click="snackbar = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
+    <!-- snackbar end -->
+    <!-- snackbar start -->
+    <v-snackbar
+      v-model="success"
+    >
+
+      {{text}}
+
+      <template v-slot:action="{ attrs }">
+        <v-btn color="pink" text v-bind="attrs" @click="snackbar = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
+    <!-- snackbar end -->
   </v-app>
 </template>
 
@@ -231,12 +253,17 @@ export default {
   data() {
     return {
       add_dialog: false,
+      timeout: 0,
       edit_dialog: false,
       dialog: false,
+      snackbar: false,
+      success: false,
+      text: "",
       cruds: [],
       name: "",
       image: "",
       public_image: null,
+      errors: [],
       editedItem: {
         name: "",
         image: "",
@@ -274,7 +301,6 @@ export default {
       let form = new FormData();
       form.append("image", this.image);
       form.append("name", this.name);
-
       axios
         .post("/api/cruds/add", form, {
           headers: {
@@ -283,13 +309,47 @@ export default {
         })
         .then((res) => {
           this.cruds.push(res.data.crud);
+          this.text = "Information Added Successfully";
+          this.success = true;
         })
-        .catch((err) => {});
+        .catch((err) => {
+          for (let x in err.response.data.errors.name) {
+            this.errors.push({
+              message: err.response.data.errors.name[x],
+            });
+          }
+          this.snackbar = true;
+        });
     },
     edit(item) {
       this.editedItem = Object.assign({}, item);
-      console.log(this.editedItem);
       this.edit_dialog = true;
+    },
+    update() {
+      let id = this.editedItem.id;
+      let formData = new FormData();
+      formData.append("name", this.editedItem.name);
+      formData.append("image", this.editedItem.image);
+
+      axios
+        .post("/api/cruds/update/" + id, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((res) => {
+          this.success = true;
+          this.text = "Item Updated Successfully"
+          Object.assign(this.cruds[id - 1], res.data.crud)
+        })
+        .catch((err) => {
+          for (let x in err.response.data.errors.name) {
+            this.errors.push({
+              message: err.response.data.errors.name[x],
+            });
+          }
+          this.snackbar = true;
+        });
     },
   },
 };
