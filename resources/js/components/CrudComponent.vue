@@ -104,20 +104,27 @@
                                                             label="Legal first name*"
                                                             required
                                                             name="name"
-                                                            v-model="editedItem.name"
+                                                            v-model="
+                                                                editedItem.name
+                                                            "
                                                         ></v-text-field>
                                                     </v-col>
                                                     <v-col md="12">
-                                                      <v-img
-                                                        max-height="100"
-                                                        max-width="100"
-                                                        :src="'/images/crud/' + editedItem.image"
-                                                    ></v-img>
+                                                        <v-img
+                                                            max-height="100"
+                                                            max-width="100"
+                                                            :src="
+                                                                '/images/crud/' +
+                                                                    editedItem.image
+                                                            "
+                                                        ></v-img>
                                                         <v-file-input
                                                             accept="image/*"
                                                             label="File input"
                                                             name="image"
-                                                            v-model="editedItem.image"
+                                                            v-model="
+                                                                editedItem.image
+                                                            "
                                                         ></v-file-input>
                                                     </v-col>
                                                 </v-row>
@@ -147,6 +154,38 @@
                             <v-icon small @click="deleteItem(item)">
                                 mdi-delete
                             </v-icon>
+                            <!-- delete modal start -->
+                            <v-dialog v-model="delete_dialog" width="500">
+
+                                <v-card>
+                                    <v-card-title
+                                        class="headline grey lighten-2"
+                                    >
+                                        Are you sure want to delete this? 
+                                    </v-card-title>
+
+                                    <v-divider></v-divider>
+
+                                    <v-card-actions>
+                                        <v-spacer></v-spacer>
+                                        <v-btn
+                                            color="primary"
+                                            text
+                                            @click="delete_dialog = false"
+                                        >
+                                            No
+                                        </v-btn>
+                                        <v-btn
+                                            color="primary"
+                                            text
+                                            @click="delete_item"
+                                        >
+                                            Yes
+                                        </v-btn>
+                                    </v-card-actions>
+                                </v-card>
+                            </v-dialog>
+                            <!-- delete modal end -->
                         </td>
                     </tr>
                 </tbody>
@@ -182,15 +221,16 @@ export default {
             name: "",
             image: "",
             snackbar: false,
+            delete_dialog: false,
             text: "",
-            editedItem:{
-              name: "",
-              image: "",
+            editedItem: {
+                name: "",
+                image: ""
             }
         };
     },
     watch: {
-        cruds: (v) => {}
+        cruds: v => {}
     },
     created() {
         this.initialize();
@@ -240,6 +280,10 @@ export default {
             this.editedItem = Object.assign({}, item);
             this.edit_dialog = true;
         },
+        deleteItem(item){
+            this.editedItem = Object.assign({},item)
+            this.delete_dialog = true;
+        },
         update() {
             let id = this.editedItem.id;
             let formData = new FormData();
@@ -255,19 +299,39 @@ export default {
                 .then(res => {
                     this.snackbar = true;
                     this.text = "Item Updated Successfully";
-                    this.edit_dialog = false
-                      this.cruds.filter((value, index) => {
-                        if(res.data.crud.id == value.id){
-                          return this.cruds.splice(index, 1, res.data.crud)
+                    this.edit_dialog = false;
+                    this.cruds.filter((value, index) => {
+                        if (res.data.crud.id == value.id) {
+                            return this.cruds.splice(index, 1, res.data.crud);
                         }
-                      })
-                    })
+                    });
+                })
                 .catch(err => {
                     for (let x in err.response.data.errors.name) {
                         this.text = err.response.data.errors.name[x];
                     }
                     this.snackbar = true;
                 });
+        },
+        delete_item(){
+            let id = this.editedItem.id
+            axios.post("/api/cruds/delete/"+id)
+            .then( res => {
+                this.snackbar = true
+                this.text = "Item Deleted Successfully"
+                this.delete_dialog = false
+                this.cruds.filter((value, index) => {
+                    if(res.data.crud.id == value.id ){
+                        return this.cruds.splice(index,1)
+                    }
+                })
+            })  
+            .catch( res => {
+                for (let x in err.response.data.errors.name) {
+                    this.text = err.response.data.errors.name[x];
+                }
+                this.snackbar = true;
+            })
         }
     }
 };

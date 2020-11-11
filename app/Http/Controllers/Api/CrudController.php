@@ -63,4 +63,17 @@ class CrudController extends Controller
             return response(['crud'=>$crud], 200);
         endif;
     }
+
+    public function delete($id){
+        $crud = Crud::find($id);
+        if( $crud ):
+            if(File::exists(public_path('images/crud/'.$crud->image))):
+                File::delete(public_path('images/crud/'.$crud->image));
+            endif;
+            if($crud->delete()):
+                return response(['crud'=>$crud], 200);
+            endif;
+        endif;
+    }
 }
+

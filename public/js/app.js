@@ -2253,6 +2253,45 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2263,6 +2302,7 @@ __webpack_require__.r(__webpack_exports__);
       name: "",
       image: "",
       snackbar: false,
+      delete_dialog: false,
       text: "",
       editedItem: {
         name: "",
@@ -2322,6 +2362,10 @@ __webpack_require__.r(__webpack_exports__);
       this.editedItem = Object.assign({}, item);
       this.edit_dialog = true;
     },
+    deleteItem: function deleteItem(item) {
+      this.editedItem = Object.assign({}, item);
+      this.delete_dialog = true;
+    },
     update: function update() {
       var _this3 = this;
 
@@ -2349,6 +2393,28 @@ __webpack_require__.r(__webpack_exports__);
         }
 
         _this3.snackbar = true;
+      });
+    },
+    delete_item: function delete_item() {
+      var _this4 = this;
+
+      var id = this.editedItem.id;
+      axios.post("/api/cruds/delete/" + id).then(function (res) {
+        _this4.snackbar = true;
+        _this4.text = "Item Deleted Successfully";
+        _this4.delete_dialog = false;
+
+        _this4.cruds.filter(function (value, index) {
+          if (res.data.crud.id == value.id) {
+            return _this4.cruds.splice(index, 1);
+          }
+        });
+      })["catch"](function (res) {
+        for (var x in err.response.data.errors.name) {
+          _this4.text = err.response.data.errors.name[x];
+        }
+
+        _this4.snackbar = true;
       });
     }
   }
@@ -24585,7 +24651,7 @@ var render = function() {
                                                           )
                                                         },
                                                         expression:
-                                                          "editedItem.name"
+                                                          "\n                                                            editedItem.name\n                                                        "
                                                       }
                                                     })
                                                   ],
@@ -24625,7 +24691,7 @@ var render = function() {
                                                           )
                                                         },
                                                         expression:
-                                                          "editedItem.image"
+                                                          "\n                                                            editedItem.image\n                                                        "
                                                       }
                                                     })
                                                   ],
@@ -24707,6 +24773,78 @@ var render = function() {
                                 "\n                            mdi-delete\n                        "
                               )
                             ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-dialog",
+                            {
+                              attrs: { width: "500" },
+                              model: {
+                                value: _vm.delete_dialog,
+                                callback: function($$v) {
+                                  _vm.delete_dialog = $$v
+                                },
+                                expression: "delete_dialog"
+                              }
+                            },
+                            [
+                              _c(
+                                "v-card",
+                                [
+                                  _c(
+                                    "v-card-title",
+                                    { staticClass: "headline grey lighten-2" },
+                                    [
+                                      _vm._v(
+                                        "\n                                    Are you sure want to delete this? \n                                "
+                                      )
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c("v-divider"),
+                                  _vm._v(" "),
+                                  _c(
+                                    "v-card-actions",
+                                    [
+                                      _c("v-spacer"),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-btn",
+                                        {
+                                          attrs: { color: "primary", text: "" },
+                                          on: {
+                                            click: function($event) {
+                                              _vm.delete_dialog = false
+                                            }
+                                          }
+                                        },
+                                        [
+                                          _vm._v(
+                                            "\n                                        No\n                                    "
+                                          )
+                                        ]
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-btn",
+                                        {
+                                          attrs: { color: "primary", text: "" },
+                                          on: { click: _vm.delete_item }
+                                        },
+                                        [
+                                          _vm._v(
+                                            "\n                                        Yes\n                                    "
+                                          )
+                                        ]
+                                      )
+                                    ],
+                                    1
+                                  )
+                                ],
+                                1
+                              )
+                            ],
+                            1
                           )
                         ],
                         1

@@ -35,4 +35,5 @@ Route::group(['middleware'=> ['auth:api'] ], function () {
     Route::get('/cruds/all',[CrudController::class,'all'])->name('all');
     Route::post('/cruds/add',[CrudController::class,'store'])->name('add');
     Route::post('/cruds/update/{id}',[CrudController::class,'update'])->name('update');
+    Route::post('/cruds/delete/{id}',[CrudController::class,'delete'])->name('delete');
 });
