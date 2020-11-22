@@ -156,12 +156,11 @@
                             </v-icon>
                             <!-- delete modal start -->
                             <v-dialog v-model="delete_dialog" width="500">
-
                                 <v-card>
                                     <v-card-title
                                         class="headline grey lighten-2"
                                     >
-                                        Are you sure want to delete this? 
+                                        Are you sure want to delete this?
                                     </v-card-title>
 
                                     <v-divider></v-divider>
@@ -280,8 +279,8 @@ export default {
             this.editedItem = Object.assign({}, item);
             this.edit_dialog = true;
         },
-        deleteItem(item){
-            this.editedItem = Object.assign({},item)
+        deleteItem(item) {
+            this.editedItem = Object.assign({}, item);
             this.delete_dialog = true;
         },
         update() {
@@ -313,25 +312,26 @@ export default {
                     this.snackbar = true;
                 });
         },
-        delete_item(){
-            let id = this.editedItem.id
-            axios.post("/api/cruds/delete/"+id)
-            .then( res => {
-                this.snackbar = true
-                this.text = "Item Deleted Successfully"
-                this.delete_dialog = false
-                this.cruds.filter((value, index) => {
-                    if(res.data.crud.id == value.id ){
-                        return this.cruds.splice(index,1)
-                    }
+        delete_item() {
+            let id = this.editedItem.id;
+            axios
+                .post("/api/cruds/delete/" + id)
+                .then(res => {
+                    this.snackbar = true;
+                    this.text = "Item Deleted Successfully";
+                    this.delete_dialog = false;
+                    this.cruds.filter((value, index) => {
+                        if (res.data.crud.id == value.id) {
+                            return this.cruds.splice(index, 1);
+                        }
+                    });
                 })
-            })  
-            .catch( res => {
-                for (let x in err.response.data.errors.name) {
-                    this.text = err.response.data.errors.name[x];
-                }
-                this.snackbar = true;
-            })
+                .catch(res => {
+                    for (let x in err.response.data.errors.name) {
+                        this.text = err.response.data.errors.name[x];
+                    }
+                    this.snackbar = true;
+                });
         }
     }
 };

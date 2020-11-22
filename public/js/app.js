@@ -2291,7 +2291,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2742,6 +2741,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2796,9 +2801,14 @@ __webpack_require__.r(__webpack_exports__);
     this.initialize();
   },
   methods: {
-    initialize: function initialize() {
+    paginate: function paginate($event) {
       var _this = this;
 
+      axios.get("/api/roles", {}).then(function (res) {
+        _this.roles = res.data.roles;
+      });
+    },
+    initialize: function initialize() {
       // Add a request interceptor
       axios.interceptors.request.use(function (config) {
         // Do something before request is sent
@@ -2816,9 +2826,6 @@ __webpack_require__.r(__webpack_exports__);
         // Any status codes that falls outside the range of 2xx cause this function to trigger
         // Do something with response error
         return Promise.reject(error);
-      });
-      axios.get("/api/roles", {}).then(function (res) {
-        _this.roles = res.data.roles;
       });
     },
     editItem: function editItem(item) {
@@ -24796,7 +24803,7 @@ var render = function() {
                                     { staticClass: "headline grey lighten-2" },
                                     [
                                       _vm._v(
-                                        "\n                                    Are you sure want to delete this? \n                                "
+                                        "\n                                    Are you sure want to delete this?\n                                "
                                       )
                                     ]
                                   ),
@@ -25224,9 +25231,14 @@ var render = function() {
         attrs: {
           headers: _vm.headers,
           items: _vm.roles,
+          "items-per-page": 5,
           "sort-by": "calories",
-          search: _vm.search
+          search: _vm.search,
+          "footer-props": {
+            itemsPerPage: [5, 10, 15]
+          }
         },
+        on: { pagination: _vm.paginate },
         scopedSlots: _vm._u(
           [
             {
@@ -85436,8 +85448,8 @@ var opts = {};
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\Users\Windows-10\Desktop\laravue\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\Users\Windows-10\Desktop\laravue\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\Users\User\Desktop\laravue\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\Users\User\Desktop\laravue\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

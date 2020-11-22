@@ -15,9 +15,15 @@
     <v-data-table
       :headers="headers"
       :items="roles"
+      :items-per-page=5
       sort-by="calories"
       class="elevation-1"
       :search="search"
+      @pagination="paginate"
+      :footer-props="{
+        itemsPerPage: [5,10,15]
+      }"
+      
     >
       <template v-slot:top>
         <v-toolbar flat>
@@ -157,6 +163,11 @@ export default {
   },
 
   methods: {
+    paginate($event){
+axios.get("/api/roles", {}).then((res) => {
+        this.roles = res.data.roles;
+      });
+    },
     initialize() {
       // Add a request interceptor
       axios.interceptors.request.use(
@@ -183,9 +194,7 @@ export default {
           return Promise.reject(error);
         }
       );
-      axios.get("/api/roles", {}).then((res) => {
-        this.roles = res.data.roles;
-      });
+      
     },
 
     editItem(item) {
