@@ -2632,6 +2632,12 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+var _methods;
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+//
+//
 //
 //
 //
@@ -2771,12 +2777,11 @@ __webpack_require__.r(__webpack_exports__);
       dialog: false,
       dialogDelete: false,
       snackbar: false,
+      selected: [],
       text: "",
       headers: [{
-        text: "#Id",
-        align: "start",
-        sortable: true,
-        value: ""
+        text: "id",
+        value: "id"
       }, {
         text: "Name",
         value: "name"
@@ -2817,14 +2822,33 @@ __webpack_require__.r(__webpack_exports__);
   created: function created() {
     this.initialize();
   },
-  methods: {
+  methods: (_methods = {
+    select_all: function select_all(e) {
+      this.selected = [];
+
+      if (e.length > 0) {
+        this.selected = e.map(function (val) {
+          return val.id;
+        });
+      }
+
+      console.dir(this.selected);
+    },
     searchIt: function searchIt(e) {
       var _this = this;
 
-      axios.get("/api/roles/search/".concat(e)).then(function (response) {
-        _this.roles = response.data.roles;
+      axios.get("/api/roles/".concat(e)).then(function (response) {
+        console.log(response.data.roles.data[0]);
+        _this.roles = response.data.roles.data[0];
       })["catch"](function (error) {
-        console.dir(error.response);
+        return console.dir(error.response);
+      });
+    },
+    initialize: function initialize() {
+      axios.get('/api/roles/').then(function (res) {
+        console.log(res);
+      })["catch"](function (err) {
+        return console.log(err);
       });
     },
     paginate: function paginate(e) {
@@ -2837,104 +2861,103 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (res) {
         _this2.roles = res.data.roles;
       });
-    },
-    initialize: function initialize() {
-      // Add a request interceptor
-      axios.interceptors.request.use(function (config) {
-        // Do something before request is sent
-        return config;
-      }, function (error) {
-        // Do something with request error
-        return Promise.reject(error);
-      }); // Add a response interceptor
+    }
+  }, _defineProperty(_methods, "initialize", function initialize() {
+    // Add a request interceptor
+    axios.interceptors.request.use(function (config) {
+      // Do something before request is sent
+      return config;
+    }, function (error) {
+      // Do something with request error
+      return Promise.reject(error);
+    }); // Add a response interceptor
 
-      axios.interceptors.response.use(function (response) {
-        // Any status code that lie within the range of 2xx cause this function to trigger
-        // Do something with response data
-        return response;
-      }, function (error) {
-        // Any status codes that falls outside the range of 2xx cause this function to trigger
-        // Do something with response error
-        return Promise.reject(error);
+    axios.interceptors.response.use(function (response) {
+      // Any status code that lie within the range of 2xx cause this function to trigger
+      // Do something with response data
+      return response;
+    }, function (error) {
+      // Any status codes that falls outside the range of 2xx cause this function to trigger
+      // Do something with response error
+      return Promise.reject(error);
+    });
+  }), _defineProperty(_methods, "editItem", function editItem(item) {
+    this.editedIndex = this.roles.toString().indexOf(item);
+    this.editedItem = Object.assign({}, item);
+    this.dialog = true;
+  }), _defineProperty(_methods, "deleteItem", function deleteItem(item) {
+    this.editedIndex = this.roles.toString().indexOf(item);
+    this.editedItem = Object.assign({}, item);
+    this.dialogDelete = true;
+  }), _defineProperty(_methods, "deleteItemConfirm", function deleteItemConfirm() {
+    var _this3 = this;
+
+    axios.post("/api/roles/delete/" + this.editedItem.id).then(function (res) {
+      _this3.snackbar = true;
+      _this3.text = "Item Deleted Successfully";
+
+      _this3.roles.data.forEach(function (value, index) {
+        if (res.data.role.id == value.id) {
+          _this3.roles.data.splice(index, 1);
+
+          _this3.dialogDelete = false;
+        }
       });
-    },
-    editItem: function editItem(item) {
-      this.editedIndex = this.roles.toString().indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialog = true;
-    },
-    deleteItem: function deleteItem(item) {
-      this.editedIndex = this.roles.toString().indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialogDelete = true;
-    },
-    deleteItemConfirm: function deleteItemConfirm() {
-      var _this3 = this;
+    })["catch"](function (err) {});
+  }), _defineProperty(_methods, "close", function close() {
+    var _this4 = this;
 
-      axios.post("/api/roles/delete/" + this.editedItem.id).then(function (res) {
-        _this3.snackbar = true;
-        _this3.text = "Item Deleted Successfully";
-      })["catch"](function (err) {});
-      this.roles.splice(this.editedIndex, 1);
-      this.closeDelete();
-    },
-    close: function close() {
-      var _this4 = this;
+    this.dialog = false;
+    this.$nextTick(function () {
+      _this4.editedItem = Object.assign({}, _this4.defaultItem);
+      _this4.editedIndex = -1;
+    });
+  }), _defineProperty(_methods, "closeDelete", function closeDelete() {
+    var _this5 = this;
 
-      this.dialog = false;
-      this.$nextTick(function () {
-        _this4.editedItem = Object.assign({}, _this4.defaultItem);
-        _this4.editedIndex = -1;
-      });
-    },
-    closeDelete: function closeDelete() {
-      var _this5 = this;
+    this.dialogDelete = false;
+    this.$nextTick(function () {
+      _this5.editedItem = Object.assign({}, _this5.defaultItem);
+      _this5.editedIndex = -1;
+    });
+  }), _defineProperty(_methods, "save", function save() {
+    var _this6 = this;
 
-      this.dialogDelete = false;
-      this.$nextTick(function () {
-        _this5.editedItem = Object.assign({}, _this5.defaultItem);
-        _this5.editedIndex = -1;
-      });
-    },
-    save: function save() {
-      var _this6 = this;
+    if (this.editedIndex > -1) {
+      var id = this.editedItem.id;
+      axios.post("api/roles/update/" + id, {
+        name: this.editedItem.name
+      }).then(function (res) {
+        _this6.snackbar = true;
+        _this6.text = "Item Updated Successfully";
 
-      if (this.editedIndex > -1) {
-        var id = this.editedItem.id;
-        axios.post("api/roles/update/" + id, {
-          name: this.editedItem.name
-        }).then(function (res) {
-          _this6.snackbar = true;
-          _this6.text = "Item Updated Successfully";
-
-          _this6.roles.data.forEach(function (value, index) {
-            if (res.data.role.id == value.id) {
-              return _this6.roles.data.splice(index, 1, res.data.role);
-            }
-          });
-        })["catch"](function (err) {
-          var error = err.response.data.message;
-        });
-      } else {
-        axios.post("/api/roles/add", {
-          name: this.editedItem.name
-        }).then(function (res) {
-          _this6.snackbar = true, _this6.text = "Item Added Successfully";
-
-          _this6.roles.push(res.data.role);
-        })["catch"](function (err) {
-          var errors = err.response.data.errors.name;
-
-          for (var x in errors) {
-            _this6.snackbar = true;
-            _this6.text = errors[x];
+        _this6.roles.data.forEach(function (value, index) {
+          if (res.data.role.id == value.id) {
+            _this6.roles.data.splice(index, 1, res.data.role);
           }
         });
-      }
+      })["catch"](function (err) {
+        var error = err.response.data.message;
+      });
+    } else {
+      axios.post("/api/roles/add", {
+        name: this.editedItem.name
+      }).then(function (res) {
+        _this6.snackbar = true, _this6.text = "Item Added Successfully";
 
-      this.close();
+        _this6.roles.data.push(res.data.role);
+      })["catch"](function (err) {
+        var errors = err.response.data.errors.name;
+
+        for (var x in errors) {
+          _this6.snackbar = true;
+          _this6.text = errors[x];
+        }
+      });
     }
-  }
+
+    this.close();
+  }), _methods)
 });
 
 /***/ }),
@@ -25257,6 +25280,7 @@ var render = function() {
           headers: _vm.headers,
           items: _vm.roles.data,
           "items-per-page": 5,
+          "show-select": "",
           "server-items-length": _vm.roles.total,
           "sort-by": "calories",
           "footer-props": {
@@ -25266,7 +25290,7 @@ var render = function() {
             "show-first-last-page": true
           }
         },
-        on: { pagination: _vm.paginate },
+        on: { input: _vm.select_all, pagination: _vm.paginate },
         scopedSlots: _vm._u(
           [
             {
@@ -85207,14 +85231,15 @@ __webpack_require__.r(__webpack_exports__);
 /*!****************************************************!*\
   !*** ./resources/js/components/RolesComponent.vue ***!
   \****************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _RolesComponent_vue_vue_type_template_id_524ffdeb_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./RolesComponent.vue?vue&type=template&id=524ffdeb&scoped=true& */ "./resources/js/components/RolesComponent.vue?vue&type=template&id=524ffdeb&scoped=true&");
 /* harmony import */ var _RolesComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./RolesComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/RolesComponent.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _RolesComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _RolesComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -85244,7 +85269,7 @@ component.options.__file = "resources/js/components/RolesComponent.vue"
 /*!*****************************************************************************!*\
   !*** ./resources/js/components/RolesComponent.vue?vue&type=script&lang=js& ***!
   \*****************************************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";

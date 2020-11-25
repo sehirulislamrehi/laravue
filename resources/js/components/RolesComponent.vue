@@ -14,6 +14,8 @@
             :headers="headers"
             :items="roles.data"
             :items-per-page="5"
+            show-select
+            @input="select_all"
             :server-items-length="roles.total"
             sort-by="calories"
             class="elevation-1"
@@ -137,14 +139,10 @@ export default {
         dialog: false,
         dialogDelete: false,
         snackbar: false,
+        selected : [],
         text: "",
         headers: [
-            {
-                text: "#Id",
-                align: "start",
-                sortable: true,
-                value: ""
-            },
+            { text: "id", value : "id" },
             { text: "Name", value: "name" },
             { text: "Created At", value: "created_at" },
             { text: "Updated At", value: "updated_at" },
@@ -180,16 +178,30 @@ export default {
     },
 
     methods: {
-        searchIt(e) {
-            axios
-                .get(`/api/roles/search/${e}`)
-                .then(response => {
-                    this.roles = response.data.roles;
-                })
-                .catch(error => {
-                    console.dir(error.response);
-                });
+        select_all(e){
+            this.selected = [];
+            if( e.length > 0 ){
+                this.selected = e.map( val => val.id )
+            }
+            console.dir(this.selected)
         },
+        
+        searchIt(e) {
+                axios.get(`/api/roles/${e}`)
+                .then(  ( response ) => {
+                    console.log(response.data.roles.data[0])
+                    this.roles = response.data.roles.data[0]
+                })
+                .catch(error => console.dir(error.response));
+        },
+        initialize(){
+            axios.get('/api/roles/')
+            .then( res => {
+                console.log(res)
+            })
+            .catch( err => console.log(err) )
+        },
+        
         paginate(e) {
             axios
                 .get(`/api/roles?page=${e.page}`, {
@@ -246,10 +258,15 @@ export default {
                 .then(res => {
                     this.snackbar = true;
                     this.text = "Item Deleted Successfully";
+                    this.roles.data.forEach((value, index) => {
+                        if (res.data.role.id == value.id) {
+                            this.roles.data.splice(index,1);
+                            this.dialogDelete = false;
+                        }
+                    });
                 })
                 .catch(err => {});
-            this.roles.splice(this.editedIndex, 1);
-            this.closeDelete();
+            
         },
 
         close() {
@@ -280,7 +297,7 @@ export default {
                         this.text = "Item Updated Successfully";
                         this.roles.data.forEach((value, index) => {
                             if (res.data.role.id == value.id) {
-                                return this.roles.data.splice(index,1,res.data.role);
+                                this.roles.data.splice(index,1,res.data.role);
                             }
                         });
                     })
@@ -295,7 +312,7 @@ export default {
                     .then(res => {
                         (this.snackbar = true),
                             (this.text = "Item Added Successfully");
-                        this.roles.push(res.data.role);
+                        this.roles.data.push(res.data.role);
                     })
                     .catch(err => {
                         let errors = err.response.data.errors.name;
