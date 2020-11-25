@@ -2747,10 +2747,27 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      search: "",
       dialog: false,
       dialogDelete: false,
       snackbar: false,
@@ -2759,7 +2776,7 @@ __webpack_require__.r(__webpack_exports__);
         text: "#Id",
         align: "start",
         sortable: true,
-        value: ''
+        value: ""
       }, {
         text: "Name",
         value: "name"
@@ -2801,11 +2818,24 @@ __webpack_require__.r(__webpack_exports__);
     this.initialize();
   },
   methods: {
-    paginate: function paginate($event) {
+    searchIt: function searchIt(e) {
       var _this = this;
 
-      axios.get("/api/roles", {}).then(function (res) {
-        _this.roles = res.data.roles;
+      axios.get("/api/roles/search/".concat(e)).then(function (response) {
+        _this.roles = response.data.roles;
+      })["catch"](function (error) {
+        console.dir(error.response);
+      });
+    },
+    paginate: function paginate(e) {
+      var _this2 = this;
+
+      axios.get("/api/roles?page=".concat(e.page), {
+        params: {
+          per_page: e.itemsPerPage
+        }
+      }).then(function (res) {
+        _this2.roles = res.data.roles;
       });
     },
     initialize: function initialize() {
@@ -2829,53 +2859,59 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     editItem: function editItem(item) {
-      this.editedIndex = this.roles.indexOf(item);
+      this.editedIndex = this.roles.toString().indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
     deleteItem: function deleteItem(item) {
-      this.editedIndex = this.roles.indexOf(item);
+      this.editedIndex = this.roles.toString().indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialogDelete = true;
     },
     deleteItemConfirm: function deleteItemConfirm() {
-      var _this2 = this;
+      var _this3 = this;
 
-      axios.post('/api/roles/delete/' + this.editedItem.id).then(function (res) {
-        _this2.snackbar = true;
-        _this2.text = 'Item Deleted Successfully';
+      axios.post("/api/roles/delete/" + this.editedItem.id).then(function (res) {
+        _this3.snackbar = true;
+        _this3.text = "Item Deleted Successfully";
       })["catch"](function (err) {});
       this.roles.splice(this.editedIndex, 1);
       this.closeDelete();
     },
     close: function close() {
-      var _this3 = this;
-
-      this.dialog = false;
-      this.$nextTick(function () {
-        _this3.editedItem = Object.assign({}, _this3.defaultItem);
-        _this3.editedIndex = -1;
-      });
-    },
-    closeDelete: function closeDelete() {
       var _this4 = this;
 
-      this.dialogDelete = false;
+      this.dialog = false;
       this.$nextTick(function () {
         _this4.editedItem = Object.assign({}, _this4.defaultItem);
         _this4.editedIndex = -1;
       });
     },
-    save: function save() {
+    closeDelete: function closeDelete() {
       var _this5 = this;
+
+      this.dialogDelete = false;
+      this.$nextTick(function () {
+        _this5.editedItem = Object.assign({}, _this5.defaultItem);
+        _this5.editedIndex = -1;
+      });
+    },
+    save: function save() {
+      var _this6 = this;
 
       if (this.editedIndex > -1) {
         var id = this.editedItem.id;
-        axios.post('api/roles/update/' + id, {
-          'name': this.editedItem.name
+        axios.post("api/roles/update/" + id, {
+          name: this.editedItem.name
         }).then(function (res) {
-          _this5.snackbar = true, _this5.text = "Item Updated Successfully";
-          Object.assign(_this5.roles[id - 1], res.data.role);
+          _this6.snackbar = true;
+          _this6.text = "Item Updated Successfully";
+
+          _this6.roles.data.forEach(function (value, index) {
+            if (res.data.role.id == value.id) {
+              return _this6.roles.data.splice(index, 1, res.data.role);
+            }
+          });
         })["catch"](function (err) {
           var error = err.response.data.message;
         });
@@ -2883,15 +2919,15 @@ __webpack_require__.r(__webpack_exports__);
         axios.post("/api/roles/add", {
           name: this.editedItem.name
         }).then(function (res) {
-          _this5.snackbar = true, _this5.text = "Item Added Successfully";
+          _this6.snackbar = true, _this6.text = "Item Added Successfully";
 
-          _this5.roles.push(res.data.role);
+          _this6.roles.push(res.data.role);
         })["catch"](function (err) {
           var errors = err.response.data.errors.name;
 
           for (var x in errors) {
-            _this5.snackbar = true;
-            _this5.text = errors[x];
+            _this6.snackbar = true;
+            _this6.text = errors[x];
           }
         });
       }
@@ -25208,19 +25244,8 @@ var render = function() {
         "v-card-title",
         [
           _c("v-text-field", {
-            attrs: {
-              "append-icon": "mdi-magnify",
-              label: "Search",
-              "single-line": "",
-              "hide-details": ""
-            },
-            model: {
-              value: _vm.search,
-              callback: function($$v) {
-                _vm.search = $$v
-              },
-              expression: "search"
-            }
+            attrs: { "append-icon": "mdi-magnify", label: "Search" },
+            on: { input: _vm.searchIt }
           })
         ],
         1
@@ -25230,12 +25255,15 @@ var render = function() {
         staticClass: "elevation-1",
         attrs: {
           headers: _vm.headers,
-          items: _vm.roles,
+          items: _vm.roles.data,
           "items-per-page": 5,
+          "server-items-length": _vm.roles.total,
           "sort-by": "calories",
-          search: _vm.search,
           "footer-props": {
-            itemsPerPage: [5, 10, 15]
+            itemsPerPageOptions: [5, 10, 15],
+            itemsPerPageText: "Roles Per Page",
+            "show-current-page": true,
+            "show-first-last-page": true
           }
         },
         on: { pagination: _vm.paginate },
@@ -25285,7 +25313,7 @@ var render = function() {
                                     ),
                                     [
                                       _vm._v(
-                                        "\n                New Role\n              "
+                                        "\n                            New Role\n                        "
                                       )
                                     ]
                                   )
@@ -25368,7 +25396,7 @@ var render = function() {
                                     },
                                     [
                                       _vm._v(
-                                        "\n                  Cancel\n                "
+                                        "\n                                Cancel\n                            "
                                       )
                                     ]
                                   ),
@@ -25382,7 +25410,11 @@ var render = function() {
                                       },
                                       on: { click: _vm.save }
                                     },
-                                    [_vm._v(" Save ")]
+                                    [
+                                      _vm._v(
+                                        "\n                                Save\n                            "
+                                      )
+                                    ]
                                   )
                                 ],
                                 1
@@ -25412,7 +25444,7 @@ var render = function() {
                             [
                               _c("v-card-title", { staticClass: "headline" }, [
                                 _vm._v(
-                                  "Are you sure you want to delete this item?"
+                                  "Are you sure you want to delete this\n                            item?"
                                 )
                               ]),
                               _vm._v(" "),
@@ -25482,7 +25514,7 @@ var render = function() {
                         }
                       }
                     },
-                    [_vm._v(" mdi-pencil ")]
+                    [_vm._v("\n                mdi-pencil\n            ")]
                   ),
                   _vm._v(" "),
                   _c(
@@ -25530,7 +25562,7 @@ var render = function() {
                       attrs,
                       false
                     ),
-                    [_vm._v("\n                    Close\n                ")]
+                    [_vm._v("\n                Close\n            ")]
                   )
                 ]
               }
@@ -25544,7 +25576,7 @@ var render = function() {
             expression: "snackbar"
           }
         },
-        [_vm._v("\n            " + _vm._s(_vm.text) + "\n\n            ")]
+        [_vm._v("\n        " + _vm._s(_vm.text) + "\n\n        ")]
       )
     ],
     1
