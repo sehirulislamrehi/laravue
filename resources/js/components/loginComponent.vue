@@ -138,12 +138,19 @@ export default {
                 .then(res => {
                     localStorage.setItem("token", res.data.token);
                     localStorage.setItem("LoggedIn", true);
-                    this.$router
+                    if(res.data.isAdmin){
+                        this.$router
                         .push("/admin")
                         .then(res => {
                             console.log("Logged in successfully");
                         })
                         .catch(err => console.log(err));
+                    }   
+                    else{
+                        this.text = "You need to loggedIn as an Admin"
+                        this.snackbar = true
+                    }
+                    
                 })
                 .catch(err => {
                     this.loading = false;

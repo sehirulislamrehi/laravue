@@ -2771,6 +2771,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2831,15 +2843,37 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           return val.id;
         });
       }
+    },
+    delete_all: function delete_all() {
+      var _this = this;
 
-      console.dir(this.selected);
+      var decide = confirm('Are you sure want to delete selected item?');
+
+      if (decide) {
+        axios.post('/api/roles/delete_all', {
+          'roles': this.selected
+        }).then(function (res) {
+          _this.snackbar = true;
+          _this.text = "Record deleted successfully";
+
+          _this.selected.map(function (val) {
+            var index = _this.roles.toString().indexOf(val);
+
+            _this.roles.data.splice(index, 1);
+          });
+        })["catch"](function (res) {
+          console.log(res);
+          _this.snackbar = true;
+          _this.text = "Error Deleting";
+        });
+      }
     },
     searchIt: function searchIt(e) {
-      var _this = this;
+      var _this2 = this;
 
       axios.get("/api/roles/".concat(e)).then(function (response) {
         console.log(response.data.roles.data[0]);
-        _this.roles = response.data.roles.data[0];
+        _this2.roles = response.data.roles.data[0];
       })["catch"](function (error) {
         return console.dir(error.response);
       });
@@ -2852,14 +2886,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     paginate: function paginate(e) {
-      var _this2 = this;
+      var _this3 = this;
 
       axios.get("/api/roles?page=".concat(e.page), {
         params: {
           per_page: e.itemsPerPage
         }
       }).then(function (res) {
-        _this2.roles = res.data.roles;
+        _this3.roles = res.data.roles;
       });
     }
   }, _defineProperty(_methods, "initialize", function initialize() {
@@ -2890,50 +2924,50 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     this.editedItem = Object.assign({}, item);
     this.dialogDelete = true;
   }), _defineProperty(_methods, "deleteItemConfirm", function deleteItemConfirm() {
-    var _this3 = this;
+    var _this4 = this;
 
     axios.post("/api/roles/delete/" + this.editedItem.id).then(function (res) {
-      _this3.snackbar = true;
-      _this3.text = "Item Deleted Successfully";
+      _this4.snackbar = true;
+      _this4.text = "Item Deleted Successfully";
 
-      _this3.roles.data.forEach(function (value, index) {
+      _this4.roles.data.forEach(function (value, index) {
         if (res.data.role.id == value.id) {
-          _this3.roles.data.splice(index, 1);
+          _this4.roles.data.splice(index, 1);
 
-          _this3.dialogDelete = false;
+          _this4.dialogDelete = false;
         }
       });
     })["catch"](function (err) {});
   }), _defineProperty(_methods, "close", function close() {
-    var _this4 = this;
-
-    this.dialog = false;
-    this.$nextTick(function () {
-      _this4.editedItem = Object.assign({}, _this4.defaultItem);
-      _this4.editedIndex = -1;
-    });
-  }), _defineProperty(_methods, "closeDelete", function closeDelete() {
     var _this5 = this;
 
-    this.dialogDelete = false;
+    this.dialog = false;
     this.$nextTick(function () {
       _this5.editedItem = Object.assign({}, _this5.defaultItem);
       _this5.editedIndex = -1;
     });
-  }), _defineProperty(_methods, "save", function save() {
+  }), _defineProperty(_methods, "closeDelete", function closeDelete() {
     var _this6 = this;
+
+    this.dialogDelete = false;
+    this.$nextTick(function () {
+      _this6.editedItem = Object.assign({}, _this6.defaultItem);
+      _this6.editedIndex = -1;
+    });
+  }), _defineProperty(_methods, "save", function save() {
+    var _this7 = this;
 
     if (this.editedIndex > -1) {
       var id = this.editedItem.id;
       axios.post("api/roles/update/" + id, {
         name: this.editedItem.name
       }).then(function (res) {
-        _this6.snackbar = true;
-        _this6.text = "Item Updated Successfully";
+        _this7.snackbar = true;
+        _this7.text = "Item Updated Successfully";
 
-        _this6.roles.data.forEach(function (value, index) {
+        _this7.roles.data.forEach(function (value, index) {
           if (res.data.role.id == value.id) {
-            _this6.roles.data.splice(index, 1, res.data.role);
+            _this7.roles.data.splice(index, 1, res.data.role);
           }
         });
       })["catch"](function (err) {
@@ -2943,15 +2977,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       axios.post("/api/roles/add", {
         name: this.editedItem.name
       }).then(function (res) {
-        _this6.snackbar = true, _this6.text = "Item Added Successfully";
+        _this7.snackbar = true, _this7.text = "Item Added Successfully";
 
-        _this6.roles.data.push(res.data.role);
+        _this7.roles.data.push(res.data.role);
       })["catch"](function (err) {
         var errors = err.response.data.errors.name;
 
         for (var x in errors) {
-          _this6.snackbar = true;
-          _this6.text = errors[x];
+          _this7.snackbar = true;
+          _this7.text = errors[x];
         }
       });
     }
@@ -3110,11 +3144,16 @@ __webpack_require__.r(__webpack_exports__);
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("LoggedIn", true);
 
-        _this.$router.push("/admin").then(function (res) {
-          console.log("Logged in successfully");
-        })["catch"](function (err) {
-          return console.log(err);
-        });
+        if (res.data.isAdmin) {
+          _this.$router.push("/admin").then(function (res) {
+            console.log("Logged in successfully");
+          })["catch"](function (err) {
+            return console.log(err);
+          });
+        } else {
+          _this.text = "You need to loggedIn as an Admin";
+          _this.snackbar = true;
+        }
       })["catch"](function (err) {
         _this.loading = false;
         _this.snackbar = true;
@@ -25338,6 +25377,21 @@ var render = function() {
                                     [
                                       _vm._v(
                                         "\n                            New Role\n                        "
+                                      )
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "v-btn",
+                                    {
+                                      staticClass: "mb-2",
+                                      staticStyle: { "margin-right": "15px" },
+                                      attrs: { color: "error", dark: "" },
+                                      on: { click: _vm.delete_all }
+                                    },
+                                    [
+                                      _vm._v(
+                                        "\n                            Delete Selected Item\n                        "
                                       )
                                     ]
                                   )

@@ -34,6 +34,7 @@
                     <v-spacer></v-spacer>
                     <v-dialog v-model="dialog" max-width="500px">
                         <template v-slot:activator="{ on, attrs }">
+                            
                             <v-btn
                                 color="primary"
                                 dark
@@ -42,6 +43,16 @@
                                 v-on="on"
                             >
                                 New Role
+                            </v-btn>
+
+                            <v-btn
+                                color="error"
+                                dark
+                                class="mb-2"
+                                style="margin-right: 15px;"
+                                @click="delete_all"
+                            >
+                                Delete Selected Item
                             </v-btn>
                         </template>
 
@@ -130,6 +141,7 @@
             </template>
         </v-snackbar>
         <!-- snackbar end -->
+
     </v-app>
 </template>
 
@@ -183,9 +195,26 @@ export default {
             if( e.length > 0 ){
                 this.selected = e.map( val => val.id )
             }
-            console.dir(this.selected)
         },
-        
+        delete_all(){
+            let decide = confirm('Are you sure want to delete selected item?')
+            if(decide){
+                axios.post('/api/roles/delete_all',{'roles' : this.selected })
+                .then( res => {
+                    this.snackbar = true
+                    this.text = "Record deleted successfully"
+                    this.selected.map( val => {
+                        let index = this.roles.toString().indexOf(val)
+                        this.roles.data.splice(index, 1)
+                    })
+                })
+                .catch( res => {
+                    console.log(res)
+                    this.snackbar = true
+                    this.text = "Error Deleting"
+                })
+            }
+        },
         searchIt(e) {
                 axios.get(`/api/roles/${e}`)
                 .then(  ( response ) => {
