@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\User as ResourcesUser;
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -57,5 +59,74 @@ class UserController extends Controller
 
     public function verify(Request $request){
         return $request->user()->only('name','email');
+    }
+
+
+
+    public function index(Request $request)
+    {
+        $per_page = $request->per_page;
+        return response()->json(['users'=> ResourcesUser::collection(User::paginate($per_page)), 'roles' => Role::pluck('name')->all() ],200);
+    }
+
+
+    public function show($item){
+        $users = User::where("name","Like","%$item%")->paginate();
+        return response()->json(["users" => $users], 200);
+    }
+
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $user = new User();
+        $user->name  = $request->name;
+        if($user->save()):
+            return response()->json(['user'=>$user], 200);
+        endif;
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        $user = User::find($id);
+        $user->name = $request->name;
+        if($user->save()):
+            return response()->json(['user'=>$user],200);
+        endif;
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $user = User::find($id);
+
+        if($user->delete()):
+            return response()->json(['user'=>$user], 200);
+        endif;
+
+    }
+
+    public function delete_all(Request $request){
+        $users = User::whereIn('id',$request->users)->delete();
+        if( $users ){
+            return response()->json(['users'=> $users], 200);
+        }
     }
 }

@@ -138,7 +138,8 @@ export default {
                 .then(res => {
                     localStorage.setItem("token", res.data.token);
                     localStorage.setItem("LoggedIn", true);
-                    if(res.data.isAdmin){
+                    if(res.data){
+                        console.log(res.data.isAdmin)
                         this.$router
                         .push("/admin")
                         .then(res => {

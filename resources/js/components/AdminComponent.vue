@@ -79,6 +79,16 @@
                     <v-list-item-title>Crud</v-list-item-title>
                 </v-list-item>
 
+                <v-list-item to="/admin/users">
+                    <v-list-item-icon>
+                        <span class="material-icons">
+                            people_alt
+                        </span>
+                    </v-list-item-icon>
+
+                    <v-list-item-title>Users</v-list-item-title>
+                </v-list-item>
+
                 <v-list-item @click="logout">
                     <v-list-item-icon>
                         <v-icon>mdi-logout</v-icon>

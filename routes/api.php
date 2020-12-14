@@ -34,6 +34,13 @@ Route::group(['middleware'=> ['auth:api'] ], function () {
     Route::post('/roles/delete_all/',[RoleController::class,'delete_all'])->name('delete.all');
     Route::get('/verify',[UserController::class,'verify']);
 
+    //user route start
+    Route::get('/users', [UserController::class, 'index'])->name('users');
+    Route::post('/users/add', [UserController::class, 'store'])->name('users.add');
+    Route::post('/users/update/{id}', [UserController::class, 'update'])->name('users.update');
+    Route::post('/users/delete/{id}', [UserController::class, 'destroy'])->name('users.delete');
+    Route::post('/users/delete_all/',[UserController::class,'delete_all'])->name('users.delete.all');
+
     Route::get('/cruds/all',[CrudController::class,'all'])->name('all');
     Route::post('/cruds/add',[CrudController::class,'store'])->name('add');
     Route::post('/cruds/update/{id}',[CrudController::class,'update'])->name('update');
