@@ -16,40 +16,38 @@
                             <v-form ref="form" v-model="valid" lazy-validation>
                                 <v-text-field
                                     v-model="name"
-                                    :rules="nameRules"
                                     label="Name"
                                     required
+                                    name="name"
                                 ></v-text-field>
-
+                                <small class="red--text" v-if='errors.name'>{{errors.name[0]}}</small>
                                 <v-text-field
                                     v-model="email"
-                                    :rules="emailRules"
                                     label="E-mail"
                                     required
+                                    name="email"
                                 ></v-text-field>
-
+                                <small class="red--text" v-if='errors.email'>{{errors.email[0]}}</small>
                                 <v-text-field
                                     v-model="password"
                                     :append-icon="
                                         show1 ? 'mdi-eye' : 'mdi-eye-off'
                                     "
-                                    :rules="[rules.required, rules.min]"
                                     :type="show1 ? 'text' : 'password'"
-                                    name="input-10-1"
+                                    name="password"
                                     label="Password"
                                     hint="At least 3 characters"
                                     counter
                                     @click:append="show1 = !show1"
                                 ></v-text-field>
-
+                                <small class="red--text" v-if='errors.password'>{{errors.password[0]}}</small>
                                 <v-text-field
                                     v-model="password_confirmation"
                                     :append-icon="
                                         show2 ? 'mdi-eye' : 'mdi-eye-off'
                                     "
-                                    :rules="[rules.required, rules.min]"
                                     :type="show2 ? 'text' : 'password'"
-                                    name="input-10-1"
+                                    name="password"
                                     label="Confirm Password"
                                     hint="At least 3 characters"
                                     counter
@@ -100,19 +98,9 @@
 <script>
 export default {
     data: () => ({
-        valid: true,
-        nameRules: [v => !!v || "Name is required"],
-        emailRules: [
-            v => !!v || "E-mail is required",
-            v => /.+@.+\..+/.test(v) || "E-mail must be valid"
-        ],
+        errors: {},    
         show1: false,
         show2: false,
-        rules: {
-            required: value => !!value || "Required.",
-            min: v => v.length >= 3 || "Min 3 characters",
-            emailMatch: () => "The email and password you entered don't match"
-        },
         name: "",
         email: "",
         password: "",
@@ -123,6 +111,7 @@ export default {
     }),
     methods: {
         register: function() {
+             this.errors = {};
             // Add a request interceptor
             axios.interceptors.request.use(
                 config => {
@@ -148,7 +137,7 @@ export default {
                 }
             );
             axios
-                .post("/api/register", {
+                .post("/api/register", {                   
                     name: this.name,
                     email: this.email,
                     password: this.password,
@@ -159,10 +148,12 @@ export default {
                     this.text = res.data[1];
                 })
                 .catch(err => {
+                    
                     this.loading = false
-                    this.snackbar = true
-                    let singleError = err.response.data.message
-                    this.text = singleError
+                    let singleError = err.response.data.error
+                    this.errors = {...singleError}
+                    console.log(this.errors)
+                    
                 });
         }
     }
@@ -171,6 +162,7 @@ export default {
 
 <style scoped>
 .login-card {
+
     padding: 30px;
 }
 .login_component {
@@ -184,4 +176,5 @@ export default {
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
 </style>

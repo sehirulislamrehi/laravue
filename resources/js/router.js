@@ -8,6 +8,7 @@ import admin from "./components/AdminComponent";
 import register from "./components/RegisterComponent";
 import roles from "./components/RolesComponent";
 import crud from './components/CrudComponent';
+import user from './components/userComponent';
 
 const routes = [
     {
@@ -38,6 +39,11 @@ const routes = [
                 path: "roles",
                 component: roles,
                 name: "roles"
+            },
+            {
+                path : "user",
+                component : user,
+                name : "user"
             },
             {
                 path : 'crud',
