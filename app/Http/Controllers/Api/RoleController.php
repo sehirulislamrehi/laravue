@@ -75,5 +75,11 @@ class RoleController extends Controller
 
     }
 
+    public function delete_all(Request $request){
+        $roles = Role::whereIn('id',$request->roles)->delete();
+        if( $roles ){
+            return response()->json(['roles'=> $roles], 200);
+        }
+    }
     
 }

@@ -12,7 +12,11 @@
 
         <v-data-table
             :headers="headers"
+<<<<<<< HEAD
             :items="users.data"
+=======
+            :items="users"
+>>>>>>> 25e82745305c70409f467a0bae9a65467d87dbc9
             :items-per-page="5"
             show-select
             @input="select_all"
@@ -41,7 +45,21 @@
                                 v-bind="attrs"
                                 v-on="on"
                             >
+<<<<<<< HEAD
                                 New User
+=======
+                                New user
+                            </v-btn>
+
+                            <v-btn
+                                color="error"
+                                dark
+                                class="mb-2"
+                                style="margin-right: 15px"
+                                @click="delete_all"
+                            >
+                                Delete Selected Item
+>>>>>>> 25e82745305c70409f467a0bae9a65467d87dbc9
                             </v-btn>
                         </template>
 
@@ -57,8 +75,47 @@
                                             <v-text-field
                                                 v-model="editedItem.name"
                                                 label="user name"
+<<<<<<< HEAD
                                             ></v-text-field>
                                         </v-col>
+=======
+                                                :rules=[rules.required]
+                                            ></v-text-field>
+                                        </v-col>
+                                        <v-col sm="6" md="12">
+                                            <v-text-field
+                                                v-model="editedItem.email"
+                                                label="user email"
+                                                :rules=[rules.required]
+                                            ></v-text-field>
+                                        </v-col>
+                                        <v-col sm="6" md="12">
+                                            <v-text-field
+                                                v-model="defaultItem.password"
+                                                label="password"
+                                                :rules=[rules.required]
+                                            ></v-text-field>
+                                        </v-col>
+                                        <v-col sm="6" md="12">
+                                            <v-text-field
+                                                v-model="defaultItem.rpassword"
+                                                label="Password Confirmation"
+                                                :rules=[rules.required]
+                                            ></v-text-field>
+                                        </v-col>
+                                        <v-col sm="6" md="12">
+                                            <v-select
+                                             :items="roles"
+                                             label="Select User Role"
+                                             persistent-hint
+                                             return-object
+                                             single-line
+                                             :rules=[rules.required]
+                                            >
+                                                 
+                                            </v-select>
+                                        </v-col>
+>>>>>>> 25e82745305c70409f467a0bae9a65467d87dbc9
                                     </v-row>
                                 </v-container>
                             </v-card-text>
@@ -146,6 +203,7 @@ export default {
             { text: "Name", value: "name" },
             { text: "Email", value: "email" },
             { text: "Role", value: "role" },
+<<<<<<< HEAD
             { text: "Actions", value: "actions", sortable: true }
         ],
         users: [],
@@ -155,12 +213,49 @@ export default {
         },
         defaultItem: {
             name: ""
+=======
+            { text: "Created At", value: "created_at" },
+            { text: "Updated At", value: "updated_at" },
+            { text: "Actions", value: "actions", sortable: true }
+        ],
+        rules: {
+             required: v => !!v || 'This Field is Required',
+             
+        },  
+        roles: [],
+        users: [],
+        editedIndex: -1,
+        editedItem: {
+               id: "",
+               name: "",
+               email: "",
+               role: "",
+               created_at: "",
+               updated_at: "",
+        },
+        defaultItem: {
+               id: "",
+               name: "",
+               email: "",
+               password: '',
+               rpassword: '',
+               role: "",
+               created_at: "",
+               updated_at: "",
+>>>>>>> 25e82745305c70409f467a0bae9a65467d87dbc9
         }
     }),
 
     computed: {
         formTitle() {
+<<<<<<< HEAD
             return this.editedIndex === -1 ? "New User" : "Edit User";
+=======
+            return this.editedIndex === -1 ? "New user" : "Edit user";
+        },
+        passwordMatch(){
+             return this.defaultItem.password != this.defaultItem.rpassword
+>>>>>>> 25e82745305c70409f467a0bae9a65467d87dbc9
         }
     },
 
@@ -183,9 +278,32 @@ export default {
             if( e.length > 0 ){
                 this.selected = e.map( val => val.id )
             }
+<<<<<<< HEAD
             console.dir(this.selected)
         },
         
+=======
+        },
+        delete_all(){
+            let decide = confirm('Are you sure want to delete selected item?')
+            if(decide){
+                axios.post('/api/users/delete_all',{'users' : this.selected })
+                .then( res => {
+                    this.snackbar = true
+                    this.text = "Record deleted successfully"
+                    this.selected.map( val => {
+                        let index = this.users.toString().indexOf(val)
+                        this.users.data.splice(index, 1)
+                    })
+                })
+                .catch( res => {
+                    console.log(res)
+                    this.snackbar = true
+                    this.text = "Error Deleting"
+                })
+            }
+        },
+>>>>>>> 25e82745305c70409f467a0bae9a65467d87dbc9
         searchIt(e) {
                 axios.get(`/api/users/${e}`)
                 .then(  ( response ) => {
@@ -201,7 +319,11 @@ export default {
             })
             .catch( err => console.log(err) )
         },
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 25e82745305c70409f467a0bae9a65467d87dbc9
         paginate(e) {
             axios
                 .get(`/api/users?page=${e.page}`, {
@@ -209,6 +331,10 @@ export default {
                 })
                 .then(res => {
                     this.users = res.data.users;
+<<<<<<< HEAD
+=======
+                    this.roles = res.data.roles;
+>>>>>>> 25e82745305c70409f467a0bae9a65467d87dbc9
                 });
         },
         initialize() {
@@ -266,7 +392,11 @@ export default {
                     });
                 })
                 .catch(err => {});
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> 25e82745305c70409f467a0bae9a65467d87dbc9
         },
 
         close() {
