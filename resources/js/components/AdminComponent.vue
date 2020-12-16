@@ -79,22 +79,14 @@
                     <v-list-item-title>Crud</v-list-item-title>
                 </v-list-item>
 
-<<<<<<< HEAD
                 <v-list-item to="/admin/user">
-=======
-                <v-list-item to="/admin/users">
->>>>>>> 25e82745305c70409f467a0bae9a65467d87dbc9
                     <v-list-item-icon>
                         <span class="material-icons">
                             people_alt
                         </span>
                     </v-list-item-icon>
 
-<<<<<<< HEAD
                     <v-list-item-title>User</v-list-item-title>
-=======
-                    <v-list-item-title>Users</v-list-item-title>
->>>>>>> 25e82745305c70409f467a0bae9a65467d87dbc9
                 </v-list-item>
 
                 <v-list-item @click="logout">

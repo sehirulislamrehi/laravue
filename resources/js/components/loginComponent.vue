@@ -16,10 +16,10 @@
                             <v-form ref="form">
                                 <v-text-field
                                     v-model="email"
-                                    :rules="emailRules"
                                     label="E-mail"
                                     required
                                 ></v-text-field>
+                                <v-small class="form-error" v-if="errors.email" >{{ errors.email[0] }}</v-small>
 
                                 <v-text-field
                                     color="error"
@@ -27,7 +27,6 @@
                                     :append-icon="
                                         show1 ? 'mdi-eye' : 'mdi-eye-off'
                                     "
-                                    :rules="[rules.required, rules.min]"
                                     :type="show1 ? 'text' : 'password'"
                                     name="input-10-1"
                                     label="Password"
@@ -36,6 +35,7 @@
                                     required
                                     @click:append="show1 = !show1"
                                 ></v-text-field>
+                                <v-small class="form-error" v-if="errors.password" >{{ errors.password[0] }}</v-small>
 
                                 <v-btn
                                     color="success"
@@ -88,20 +88,11 @@ export default {
             show4: false,
             loading: false,
             snackbar: false,
+            errors: {},
             text: "",
             password: "",
-            rules: {
-                required: value => !!value || "Required.",
-                min: v => v.length >= 3 || "Min 3 characters",
-                emailMatch: () =>
-                    "The email and password you entered don't match"
-            },
             valid: false,
-            email: "",
-            emailRules: [
-                v => !!v || "E-mail is required",
-                v => /.+@.+/.test(v) || "E-mail must be valid"
-            ]
+            email: ""
         };
     },
     methods: {
@@ -155,8 +146,12 @@ export default {
                 })
                 .catch(err => {
                     this.loading = false;
-                    this.snackbar = true;
-                    this.text = err.response.data.message;
+                    if( err.response.data.message ){
+                        this.snackbar = true;
+                        this.text = err.response.data.message;
+                    }
+                    let singleError = err.response.data.error
+                    this.errors = {...singleError}
                 });
         }
     }

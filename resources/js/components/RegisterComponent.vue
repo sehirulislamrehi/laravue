@@ -152,7 +152,6 @@ export default {
                     this.loading = false
                     let singleError = err.response.data.error
                     this.errors = {...singleError}
-                    console.log(this.errors)
                     
                 });
         }

@@ -12,11 +12,7 @@
 
         <v-data-table
             :headers="headers"
-<<<<<<< HEAD
-            :items="users.data"
-=======
             :items="users"
->>>>>>> 25e82745305c70409f467a0bae9a65467d87dbc9
             :items-per-page="5"
             show-select
             @input="select_all"
@@ -45,21 +41,7 @@
                                 v-bind="attrs"
                                 v-on="on"
                             >
-<<<<<<< HEAD
                                 New User
-=======
-                                New user
-                            </v-btn>
-
-                            <v-btn
-                                color="error"
-                                dark
-                                class="mb-2"
-                                style="margin-right: 15px"
-                                @click="delete_all"
-                            >
-                                Delete Selected Item
->>>>>>> 25e82745305c70409f467a0bae9a65467d87dbc9
                             </v-btn>
                         </template>
 
@@ -73,49 +55,47 @@
                                     <v-row>
                                         <v-col sm="6" md="12">
                                             <v-text-field
-                                                v-model="editedItem.name"
-                                                label="user name"
-<<<<<<< HEAD
+                                                v-model="defaultItem.name"
+                                                label="Name"
                                             ></v-text-field>
                                         </v-col>
-=======
-                                                :rules=[rules.required]
+                                         <v-col sm="6" md="12">
+                                            <v-text-field
+                                                v-model="defaultItem.email"
+                                                label="Email"
                                             ></v-text-field>
                                         </v-col>
                                         <v-col sm="6" md="12">
                                             <v-text-field
-                                                v-model="editedItem.email"
-                                                label="user email"
-                                                :rules=[rules.required]
-                                            ></v-text-field>
+                                            v-model="defaultItem.password"
+                                            :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+                                            :type="show1 ? 'text' : 'password'"
+                                            name="input-10-1"
+                                            label="Enter Your Password"
+                                            counter
+                                            @click:append="show1 = !show1"
+                                        ></v-text-field>
                                         </v-col>
                                         <v-col sm="6" md="12">
                                             <v-text-field
-                                                v-model="defaultItem.password"
-                                                label="password"
-                                                :rules=[rules.required]
-                                            ></v-text-field>
+                                            v-model="defaultItem.password_confirmation"
+                                            :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
+                                            :type="show2 ? 'text' : 'password'"
+                                            name="input-10-1"
+                                            label="Password Confirmation"
+                                            counter
+                                            @click:append="show2 = !show2"
+                                        ></v-text-field>
                                         </v-col>
-                                        <v-col sm="6" md="12">
-                                            <v-text-field
-                                                v-model="defaultItem.rpassword"
-                                                label="Password Confirmation"
-                                                :rules=[rules.required]
-                                            ></v-text-field>
-                                        </v-col>
-                                        <v-col sm="6" md="12">
+                                         <v-col sm="6" md="12">
                                             <v-select
-                                             :items="roles"
-                                             label="Select User Role"
-                                             persistent-hint
-                                             return-object
-                                             single-line
-                                             :rules=[rules.required]
+                                                :items="role"
+                                                label="Please Select User Role"
+                                                v-model="defaultItem.roles"
                                             >
-                                                 
+
                                             </v-select>
                                         </v-col>
->>>>>>> 25e82745305c70409f467a0bae9a65467d87dbc9
                                     </v-row>
                                 </v-container>
                             </v-card-text>
@@ -195,67 +175,43 @@ export default {
     data: () => ({
         dialog: false,
         dialogDelete: false,
+        show1: false,
+        show2: false,
+        password: 'Password',
         snackbar: false,
         selected : [],
+        role: [],
         text: "",
         headers: [
             { text: "id", value : "id" },
             { text: "Name", value: "name" },
             { text: "Email", value: "email" },
             { text: "Role", value: "role" },
-<<<<<<< HEAD
             { text: "Actions", value: "actions", sortable: true }
         ],
         users: [],
         editedIndex: -1,
         editedItem: {
-            name: ""
+            id: "",
+            name: "",
+            email: "",
+            role: "",
+            password: "",
+            password_comfirmation: "",
         },
         defaultItem: {
-            name: ""
-=======
-            { text: "Created At", value: "created_at" },
-            { text: "Updated At", value: "updated_at" },
-            { text: "Actions", value: "actions", sortable: true }
-        ],
-        rules: {
-             required: v => !!v || 'This Field is Required',
-             
-        },  
-        roles: [],
-        users: [],
-        editedIndex: -1,
-        editedItem: {
-               id: "",
-               name: "",
-               email: "",
-               role: "",
-               created_at: "",
-               updated_at: "",
-        },
-        defaultItem: {
-               id: "",
-               name: "",
-               email: "",
-               password: '',
-               rpassword: '',
-               role: "",
-               created_at: "",
-               updated_at: "",
->>>>>>> 25e82745305c70409f467a0bae9a65467d87dbc9
+            id: "",
+            name: "",
+            email: "",
+            role: "",
+            password: "",
+            password_comfirmation: "",
         }
     }),
 
     computed: {
         formTitle() {
-<<<<<<< HEAD
             return this.editedIndex === -1 ? "New User" : "Edit User";
-=======
-            return this.editedIndex === -1 ? "New user" : "Edit user";
-        },
-        passwordMatch(){
-             return this.defaultItem.password != this.defaultItem.rpassword
->>>>>>> 25e82745305c70409f467a0bae9a65467d87dbc9
         }
     },
 
@@ -278,32 +234,9 @@ export default {
             if( e.length > 0 ){
                 this.selected = e.map( val => val.id )
             }
-<<<<<<< HEAD
             console.dir(this.selected)
         },
         
-=======
-        },
-        delete_all(){
-            let decide = confirm('Are you sure want to delete selected item?')
-            if(decide){
-                axios.post('/api/users/delete_all',{'users' : this.selected })
-                .then( res => {
-                    this.snackbar = true
-                    this.text = "Record deleted successfully"
-                    this.selected.map( val => {
-                        let index = this.users.toString().indexOf(val)
-                        this.users.data.splice(index, 1)
-                    })
-                })
-                .catch( res => {
-                    console.log(res)
-                    this.snackbar = true
-                    this.text = "Error Deleting"
-                })
-            }
-        },
->>>>>>> 25e82745305c70409f467a0bae9a65467d87dbc9
         searchIt(e) {
                 axios.get(`/api/users/${e}`)
                 .then(  ( response ) => {
@@ -315,15 +248,10 @@ export default {
         initialize(){
             axios.get('/api/users/')
             .then( res => {
-                console.log(res)
             })
-            .catch( err => console.log(err) )
+            .catch( err => {} )
         },
-<<<<<<< HEAD
         
-=======
-
->>>>>>> 25e82745305c70409f467a0bae9a65467d87dbc9
         paginate(e) {
             axios
                 .get(`/api/users?page=${e.page}`, {
@@ -331,10 +259,7 @@ export default {
                 })
                 .then(res => {
                     this.users = res.data.users;
-<<<<<<< HEAD
-=======
-                    this.roles = res.data.roles;
->>>>>>> 25e82745305c70409f467a0bae9a65467d87dbc9
+                    this.role = res.data.roles
                 });
         },
         initialize() {
@@ -392,11 +317,7 @@ export default {
                     });
                 })
                 .catch(err => {});
-<<<<<<< HEAD
             
-=======
-
->>>>>>> 25e82745305c70409f467a0bae9a65467d87dbc9
         },
 
         close() {
