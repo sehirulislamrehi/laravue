@@ -12,7 +12,7 @@
 
         <v-data-table
             :headers="headers"
-            :items="users"
+            :items="users.data"
             :items-per-page="5"
             show-select
             @input="select_all"
@@ -58,12 +58,14 @@
                                                 v-model="defaultItem.name"
                                                 label="Name"
                                             ></v-text-field>
+                                            <small class="red--text" v-if="errors.name">{{ errors.name[0] }}</small>
                                         </v-col>
                                          <v-col sm="6" md="12">
                                             <v-text-field
                                                 v-model="defaultItem.email"
                                                 label="Email"
                                             ></v-text-field>
+                                            <small class="red--text" v-if="errors.email">{{ errors.email[0] }}</small>
                                         </v-col>
                                         <v-col sm="6" md="12">
                                             <v-text-field
@@ -75,10 +77,11 @@
                                             counter
                                             @click:append="show1 = !show1"
                                         ></v-text-field>
+                                        <small class="red--text" v-if="errors.password">{{ errors.password[0] }}</small>
                                         </v-col>
                                         <v-col sm="6" md="12">
                                             <v-text-field
-                                            v-model="defaultItem.password_confirmation"
+                                            v-model="defaultItem.password_comfirmation"
                                             :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
                                             :type="show2 ? 'text' : 'password'"
                                             name="input-10-1"
@@ -89,12 +92,14 @@
                                         </v-col>
                                          <v-col sm="6" md="12">
                                             <v-select
-                                                :items="role"
+                                                :items="roles"
                                                 label="Please Select User Role"
                                                 v-model="defaultItem.roles"
                                             >
 
                                             </v-select>
+                                        <small class="red--text" v-if="errors.roles">{{ errors.roles[0] }}</small>
+
                                         </v-col>
                                     </v-row>
                                 </v-container>
@@ -143,6 +148,19 @@
                 </v-toolbar>
             </template>
 
+            <template v-slot:[`item.profile.images`]="{ item }">
+                <v-img
+                    :src="item.profile.images"
+                    :lazy-src="item.profile.images"
+                    aspect-ratio="1"
+                    class="grey lighten-2"
+                    max-width="50"
+                    max-height="50"
+                >
+
+                </v-img>
+            </template>
+
             <template v-slot:[`item.actions`]="{ item }">
                 <v-icon small class="mr-2" @click="editItem(item)">
                     mdi-pencil
@@ -180,13 +198,15 @@ export default {
         password: 'Password',
         snackbar: false,
         selected : [],
-        role: [],
+        errors: {},
+        roles: [],
         text: "",
         headers: [
             { text: "id", value : "id" },
             { text: "Name", value: "name" },
             { text: "Email", value: "email" },
-            { text: "Role", value: "role" },
+            { text: "Image", value: "profile.images" },
+            { text: "Role", value: "role.name" },
             { text: "Actions", value: "actions", sortable: true }
         ],
         users: [],
@@ -195,7 +215,7 @@ export default {
             id: "",
             name: "",
             email: "",
-            role: "",
+            roles: "",
             password: "",
             password_comfirmation: "",
         },
@@ -203,7 +223,8 @@ export default {
             id: "",
             name: "",
             email: "",
-            role: "",
+            roles: "",
+            image: "",
             password: "",
             password_comfirmation: "",
         }
@@ -237,18 +258,17 @@ export default {
         },
         
         searchIt(e) {
-                axios.get(`/api/users/${e}`)
+                axios.get(`/api/users/${e}`,{
+                    params: { per_page: e.itemsPerPage }
+                })
                 .then(  ( response ) => {
-                    this.users = response.data.users.data[0]
+                    
+                    this.users = response.data.users
+                    
                 })
                 .catch(error => {});
         },
-        initialize(){
-            axios.get('/api/users/')
-            .then( res => {
-            })
-            .catch( err => {} )
-        },
+        
         
         paginate(e) {
             axios
@@ -257,7 +277,7 @@ export default {
                 })
                 .then(res => {
                     this.users = res.data.users
-                    this.role = res.data.roles
+                    this.roles = res.data.roles
                 });
         },
         initialize() {
@@ -337,6 +357,7 @@ export default {
         },
 
         save() {
+            this.dialog = true
             if (this.editedIndex > -1) {
                 let id = this.editedItem.id;
                 axios
@@ -356,24 +377,28 @@ export default {
                         let error = err.response.data.message;
                     });
             } else {
+                this.errors = {};
                 axios
                     .post("/api/users/add", {
-                        name: this.editedItem.name
+                        name: this.defaultItem.name,
+                        email: this.defaultItem.email,
+                        password: this.defaultItem.password,
+                        password_comfirmation: this.defaultItem.password_comfirmation,
+                        roles: this.defaultItem.roles
                     })
                     .then(res => {
+                        this.dialog = true
                         (this.snackbar = true),
                             (this.text = "Item Added Successfully");
                         this.users.data.push(res.data.user);
+                        this.paginate({page:1, itemsPerPage: 10})
                     })
                     .catch(err => {
-                        let errors = err.response.data.errors.name;
-                        for (let x in errors) {
-                            this.snackbar = true;
-                            this.text = errors[x];
-                        }
+                        let singleError = err.response.data.error
+                        this.errors = {...singleError}
+                        this.dialog = true
                     });
             }
-            this.close();
         }
     }
 };

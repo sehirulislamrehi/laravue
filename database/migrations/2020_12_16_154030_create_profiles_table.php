@@ -15,7 +15,8 @@ class CreateProfilesTable extends Migration
     {
         Schema::create('profiles', function (Blueprint $table) {
             $table->id();
-            $table->string('images', 255)->default('images/user.png');
+            $table->integer('user_id');
+            $table->string('images', 255)->default('storage/images/user.png');
             $table->timestamps();
         });
     }

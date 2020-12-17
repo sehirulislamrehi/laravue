@@ -81,7 +81,10 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $per_page = $request->per_page;
-        return response()->json(['users' => ResourcesUser::collection(User::paginate($per_page)),'roles' => Role::pluck('name')->all()], 200);
+        return response()->json([
+            'users' => User::with(['role','profile'])->paginate($per_page),
+            'roles' => Role::pluck('name')->all()
+        ], 200);
     }
 
 
@@ -100,12 +103,24 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $user = new User();
-        $user->name  = $request->name;
-        $user->email  = $request->email;
-        if ($user->save()) :
-            return response()->json(['user' => $user], 200);
-        endif;
+        $validator = Validator::make($request->all(),[
+            'name' => 'required',
+            'email' => 'required',
+            'password' => 'required|confirmed',
+            'roles' => 'required',
+        ]);
+
+        if( $validator->fails() ){
+            return response()->json(['error' => $validator->errors()], 422);
+        }else{
+            $user = new User();
+            $user->name  = $request->name;
+            $user->email  = $request->email;
+            if ($user->save()) :
+                return response()->json(['user' => $user], 200);
+            endif;
+        }
+        
     }
 
     /**

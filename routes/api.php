@@ -35,6 +35,7 @@ Route::group(['middleware'=> ['auth:api'] ], function () {
     Route::get('/verify',[UserController::class,'verify']);
 
     Route::get('/users', [UserController::class, 'index'])->name('users');
+    Route::get('/users/{item}', [UserController::class, 'show'])->name('users.search');
     Route::post('/users/add', [UserController::class, 'store'])->name('user.add');
     Route::post('/users/update/{id}', [UserController::class, 'update'])->name('user.update');
     Route::post('/users/delete/{id}', [UserController::class, 'destroy'])->name('user.delete');

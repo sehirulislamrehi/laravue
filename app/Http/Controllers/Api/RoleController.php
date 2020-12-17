@@ -69,6 +69,10 @@ class RoleController extends Controller
     {
         $role = Role::find($id);
 
+        foreach( $role->user as $single_user ){
+            $single_user->delete();
+        }
+
         if($role->delete()):
             return response()->json(['role'=>$role], 200);
         endif;
@@ -76,7 +80,16 @@ class RoleController extends Controller
     }
 
     public function delete_all(Request $request){
+        return $roles = Role::whereIn('id',$request->roles)->get();
+
+        foreach( $roles as $role ){
+            foreach( $role->user as $single_user ){
+                $single_user->delete();
+            }
+        }
+
         $roles = Role::whereIn('id',$request->roles)->delete();
+        
         if( $roles ){
             return response()->json(['roles'=> $roles], 200);
         }

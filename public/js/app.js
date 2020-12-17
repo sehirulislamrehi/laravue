@@ -2997,10 +2997,30 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-var _methods;
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -3183,7 +3203,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       password: 'Password',
       snackbar: false,
       selected: [],
-      role: [],
+      errors: {},
+      roles: [],
       text: "",
       headers: [{
         text: "id",
@@ -3195,8 +3216,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         text: "Email",
         value: "email"
       }, {
+        text: "Image",
+        value: "profile.images"
+      }, {
         text: "Role",
-        value: "role"
+        value: "role.name"
       }, {
         text: "Actions",
         value: "actions",
@@ -3208,7 +3232,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         id: "",
         name: "",
         email: "",
-        role: "",
+        roles: "",
         password: "",
         password_comfirmation: ""
       },
@@ -3216,7 +3240,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         id: "",
         name: "",
         email: "",
-        role: "",
+        roles: "",
+        image: "",
         password: "",
         password_comfirmation: ""
       }
@@ -3238,7 +3263,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   created: function created() {
     this.initialize();
   },
-  methods: (_methods = {
+  methods: {
     select_all: function select_all(e) {
       this.selected = [];
 
@@ -3251,12 +3276,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     searchIt: function searchIt(e) {
       var _this = this;
 
-      axios.get("/api/users/".concat(e)).then(function (response) {
-        _this.users = response.data.users.data[0];
+      axios.get("/api/users/".concat(e), {
+        params: {
+          per_page: e.itemsPerPage
+        }
+      }).then(function (response) {
+        _this.users = response.data.users;
       })["catch"](function (error) {});
-    },
-    initialize: function initialize() {
-      axios.get('/api/users/').then(function (res) {})["catch"](function (err) {});
     },
     paginate: function paginate(e) {
       var _this2 = this;
@@ -3267,106 +3293,120 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }
       }).then(function (res) {
         _this2.users = res.data.users;
-        _this2.role = res.data.roles;
+        _this2.roles = res.data.roles;
       });
-    }
-  }, _defineProperty(_methods, "initialize", function initialize() {
-    // Add a request interceptor 
-    axios.interceptors.request.use(function (config) {
-      // Do something before request is sent
-      return config;
-    }, function (error) {
-      // Do something with request error
-      return Promise.reject(error);
-    }); // Add a request interceptor end
-    // Add a response interceptor
+    },
+    initialize: function initialize() {
+      // Add a request interceptor 
+      axios.interceptors.request.use(function (config) {
+        // Do something before request is sent
+        return config;
+      }, function (error) {
+        // Do something with request error
+        return Promise.reject(error);
+      }); // Add a request interceptor end
+      // Add a response interceptor
 
-    axios.interceptors.response.use(function (response) {
-      // Any status code that lie within the range of 2xx cause this function to trigger
-      // Do something with response data
-      return response;
-    }, function (error) {
-      // Any status codes that falls outside the range of 2xx cause this function to trigger
-      // Do something with response error
-      return Promise.reject(error);
-    });
-  }), _defineProperty(_methods, "editItem", function editItem(item) {
-    this.editedIndex = this.users.toString().indexOf(item);
-    this.editedItem = Object.assign({}, item);
-    this.dialog = true;
-  }), _defineProperty(_methods, "deleteItem", function deleteItem(item) {
-    this.editedIndex = this.users.toString().indexOf(item);
-    this.editedItem = Object.assign({}, item);
-    this.dialogDelete = true;
-  }), _defineProperty(_methods, "deleteItemConfirm", function deleteItemConfirm() {
-    var _this3 = this;
-
-    axios.post("/api/users/delete/" + this.editedItem.id).then(function (res) {
-      _this3.snackbar = true;
-      _this3.text = "Item Deleted Successfully";
-
-      _this3.users.data.forEach(function (value, index) {
-        if (res.data.user.id == value.id) {
-          _this3.users.data.splice(index, 1);
-
-          _this3.dialogDelete = false;
-        }
+      axios.interceptors.response.use(function (response) {
+        // Any status code that lie within the range of 2xx cause this function to trigger
+        // Do something with response data
+        return response;
+      }, function (error) {
+        // Any status codes that falls outside the range of 2xx cause this function to trigger
+        // Do something with response error
+        return Promise.reject(error);
       });
-    })["catch"](function (err) {});
-  }), _defineProperty(_methods, "close", function close() {
-    var _this4 = this;
+    },
+    editItem: function editItem(item) {
+      this.editedIndex = this.users.toString().indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.dialog = true;
+    },
+    deleteItem: function deleteItem(item) {
+      this.editedIndex = this.users.toString().indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.dialogDelete = true;
+    },
+    deleteItemConfirm: function deleteItemConfirm() {
+      var _this3 = this;
 
-    this.dialog = false;
-    this.$nextTick(function () {
-      _this4.editedItem = Object.assign({}, _this4.defaultItem);
-      _this4.editedIndex = -1;
-    });
-  }), _defineProperty(_methods, "closeDelete", function closeDelete() {
-    var _this5 = this;
+      axios.post("/api/users/delete/" + this.editedItem.id).then(function (res) {
+        _this3.snackbar = true;
+        _this3.text = "Item Deleted Successfully";
 
-    this.dialogDelete = false;
-    this.$nextTick(function () {
-      _this5.editedItem = Object.assign({}, _this5.defaultItem);
-      _this5.editedIndex = -1;
-    });
-  }), _defineProperty(_methods, "save", function save() {
-    var _this6 = this;
-
-    if (this.editedIndex > -1) {
-      var id = this.editedItem.id;
-      axios.post("api/users/update/" + id, {
-        name: this.editedItem.name
-      }).then(function (res) {
-        _this6.snackbar = true;
-        _this6.text = "Item Updated Successfully";
-
-        _this6.users.data.forEach(function (value, index) {
+        _this3.users.data.forEach(function (value, index) {
           if (res.data.user.id == value.id) {
-            _this6.users.data.splice(index, 1, res.data.user);
+            _this3.users.data.splice(index, 1);
+
+            _this3.dialogDelete = false;
           }
         });
-      })["catch"](function (err) {
-        var error = err.response.data.message;
+      })["catch"](function (err) {});
+    },
+    close: function close() {
+      var _this4 = this;
+
+      this.dialog = false;
+      this.$nextTick(function () {
+        _this4.editedItem = Object.assign({}, _this4.defaultItem);
+        _this4.editedIndex = -1;
       });
-    } else {
-      axios.post("/api/users/add", {
-        name: this.editedItem.name
-      }).then(function (res) {
-        _this6.snackbar = true, _this6.text = "Item Added Successfully";
+    },
+    closeDelete: function closeDelete() {
+      var _this5 = this;
 
-        _this6.users.data.push(res.data.user);
-      })["catch"](function (err) {
-        var errors = err.response.data.errors.name;
+      this.dialogDelete = false;
+      this.$nextTick(function () {
+        _this5.editedItem = Object.assign({}, _this5.defaultItem);
+        _this5.editedIndex = -1;
+      });
+    },
+    save: function save() {
+      var _this6 = this;
 
-        for (var x in errors) {
+      this.dialog = true;
+
+      if (this.editedIndex > -1) {
+        var id = this.editedItem.id;
+        axios.post("api/users/update/" + id, {
+          name: this.editedItem.name
+        }).then(function (res) {
           _this6.snackbar = true;
-          _this6.text = errors[x];
-        }
-      });
-    }
+          _this6.text = "Item Updated Successfully";
 
-    this.close();
-  }), _methods)
+          _this6.users.data.forEach(function (value, index) {
+            if (res.data.user.id == value.id) {
+              _this6.users.data.splice(index, 1, res.data.user);
+            }
+          });
+        })["catch"](function (err) {
+          var error = err.response.data.message;
+        });
+      } else {
+        this.errors = {};
+        axios.post("/api/users/add", {
+          name: this.defaultItem.name,
+          email: this.defaultItem.email,
+          password: this.defaultItem.password,
+          password_comfirmation: this.defaultItem.password_comfirmation,
+          roles: this.defaultItem.roles
+        }).then(function (res) {
+          _this6.dialog = true(_this6.snackbar = true), _this6.text = "Item Added Successfully";
+
+          _this6.users.data.push(res.data.user);
+
+          _this6.paginate({
+            page: 1,
+            itemsPerPage: 10
+          });
+        })["catch"](function (err) {
+          var singleError = err.response.data.error;
+          _this6.errors = _objectSpread({}, singleError);
+          _this6.dialog = true;
+        });
+      }
+    }
+  }
 });
 
 /***/ }),
@@ -26107,7 +26147,7 @@ var render = function() {
         staticClass: "elevation-1",
         attrs: {
           headers: _vm.headers,
-          items: _vm.users,
+          items: _vm.users.data,
           "items-per-page": 5,
           "show-select": "",
           "server-items-length": _vm.users.total,
@@ -26219,7 +26259,23 @@ var render = function() {
                                                   },
                                                   expression: "defaultItem.name"
                                                 }
-                                              })
+                                              }),
+                                              _vm._v(" "),
+                                              _vm.errors.name
+                                                ? _c(
+                                                    "small",
+                                                    {
+                                                      staticClass: "red--text"
+                                                    },
+                                                    [
+                                                      _vm._v(
+                                                        _vm._s(
+                                                          _vm.errors.name[0]
+                                                        )
+                                                      )
+                                                    ]
+                                                  )
+                                                : _vm._e()
                                             ],
                                             1
                                           ),
@@ -26242,7 +26298,23 @@ var render = function() {
                                                   expression:
                                                     "defaultItem.email"
                                                 }
-                                              })
+                                              }),
+                                              _vm._v(" "),
+                                              _vm.errors.email
+                                                ? _c(
+                                                    "small",
+                                                    {
+                                                      staticClass: "red--text"
+                                                    },
+                                                    [
+                                                      _vm._v(
+                                                        _vm._s(
+                                                          _vm.errors.email[0]
+                                                        )
+                                                      )
+                                                    ]
+                                                  )
+                                                : _vm._e()
                                             ],
                                             1
                                           ),
@@ -26283,7 +26355,23 @@ var render = function() {
                                                   expression:
                                                     "defaultItem.password"
                                                 }
-                                              })
+                                              }),
+                                              _vm._v(" "),
+                                              _vm.errors.password
+                                                ? _c(
+                                                    "small",
+                                                    {
+                                                      staticClass: "red--text"
+                                                    },
+                                                    [
+                                                      _vm._v(
+                                                        _vm._s(
+                                                          _vm.errors.password[0]
+                                                        )
+                                                      )
+                                                    ]
+                                                  )
+                                                : _vm._e()
                                             ],
                                             1
                                           ),
@@ -26315,16 +26403,16 @@ var render = function() {
                                                 model: {
                                                   value:
                                                     _vm.defaultItem
-                                                      .password_confirmation,
+                                                      .password_comfirmation,
                                                   callback: function($$v) {
                                                     _vm.$set(
                                                       _vm.defaultItem,
-                                                      "password_confirmation",
+                                                      "password_comfirmation",
                                                       $$v
                                                     )
                                                   },
                                                   expression:
-                                                    "defaultItem.password_confirmation"
+                                                    "defaultItem.password_comfirmation"
                                                 }
                                               })
                                             ],
@@ -26337,7 +26425,7 @@ var render = function() {
                                             [
                                               _c("v-select", {
                                                 attrs: {
-                                                  items: _vm.role,
+                                                  items: _vm.roles,
                                                   label:
                                                     "Please Select User Role"
                                                 },
@@ -26353,7 +26441,23 @@ var render = function() {
                                                   expression:
                                                     "defaultItem.roles"
                                                 }
-                                              })
+                                              }),
+                                              _vm._v(" "),
+                                              _vm.errors.roles
+                                                ? _c(
+                                                    "small",
+                                                    {
+                                                      staticClass: "red--text"
+                                                    },
+                                                    [
+                                                      _vm._v(
+                                                        _vm._s(
+                                                          _vm.errors.roles[0]
+                                                        )
+                                                      )
+                                                    ]
+                                                  )
+                                                : _vm._e()
                                             ],
                                             1
                                           )
@@ -26484,6 +26588,24 @@ var render = function() {
                 ]
               },
               proxy: true
+            },
+            {
+              key: "item.profile.images",
+              fn: function(ref) {
+                var item = ref.item
+                return [
+                  _c("v-img", {
+                    staticClass: "grey lighten-2",
+                    attrs: {
+                      src: item.profile.images,
+                      "lazy-src": item.profile.images,
+                      "aspect-ratio": "1",
+                      "max-width": "50",
+                      "max-height": "50"
+                    }
+                  })
+                ]
+              }
             },
             {
               key: "item.actions",
