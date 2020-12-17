@@ -13,7 +13,7 @@
         <v-data-table
             :headers="headers"
             :items="roles.data"
-            :items-per-page="5"
+            :items-per-page="10"
             show-select
             @input="select_all"
             :server-items-length="roles.total"
@@ -21,7 +21,7 @@
             class="elevation-1"
             @pagination="paginate"
             :footer-props="{
-                itemsPerPageOptions: [5, 10, 15],
+                itemsPerPageOptions: [10],
                 itemsPerPageText: 'Roles Per Page',
                 'show-current-page': true,
                 'show-first-last-page': true
@@ -34,7 +34,6 @@
                     <v-spacer></v-spacer>
                     <v-dialog v-model="dialog" max-width="500px">
                         <template v-slot:activator="{ on, attrs }">
-                            
                             <v-btn
                                 color="primary"
                                 dark
@@ -141,7 +140,6 @@
             </template>
         </v-snackbar>
         <!-- snackbar end -->
-
     </v-app>
 </template>
 
@@ -151,10 +149,10 @@ export default {
         dialog: false,
         dialogDelete: false,
         snackbar: false,
-        selected : [],
+        selected: [],
         text: "",
         headers: [
-            { text: "id", value : "id" },
+            { text: "id", value: "id" },
             { text: "Name", value: "name" },
             { text: "Created At", value: "created_at" },
             { text: "Updated At", value: "updated_at" },
@@ -182,7 +180,8 @@ export default {
         },
         dialogDelete(val) {
             val || this.closeDelete();
-        }
+        },
+        roles: v => {}
     },
 
     created() {
@@ -190,47 +189,40 @@ export default {
     },
 
     methods: {
-        select_all(e){
+        select_all(e) {
             this.selected = [];
-            if( e.length > 0 ){
-                this.selected = e.map( val => val.id )
+            if (e.length > 0) {
+                this.selected = e.map(val => val.id);
             }
         },
-        delete_all(){
-            let decide = confirm('Are you sure want to delete selected item?')
-            if(decide){
-                axios.post('/api/roles/delete_all',{'roles' : this.selected })
-                .then( res => {
-                    this.snackbar = true
-                    this.text = "Record deleted successfully"
-                    this.selected.map( val => {
-                        let index = this.roles.toString().indexOf(val)
-                        this.roles.data.splice(index, 1)
+        delete_all() {
+            let decide = confirm("Are you sure want to delete selected item?");
+            if (decide) {
+                axios
+                    .post("/api/roles/delete_all", { roles: this.selected })
+                    .then(res => {
+                        this.snackbar = true;
+                        this.text = "Record deleted successfully";
+                        this.selected.map(val => {
+                            let index = this.roles.toString().indexOf(val);
+                            this.roles.data.splice(index, 1);
+                        });
                     })
-                })
-                .catch( res => {
-                    console.log(res)
-                    this.snackbar = true
-                    this.text = "Error Deleting"
-                })
+                    .catch(res => {
+                        console.log(res);
+                        this.snackbar = true;
+                        this.text = "Error Deleting";
+                    });
             }
         },
         searchIt(e) {
-                axios.get(`/api/roles/${e}`)
-                .then(  ( response ) => {
-                    console.log(response.data.roles.data[0])
-                    this.roles = response.data.roles.data[0]
+            axios
+                .get(`/api/roles/${e}`)
+                .then( response => {
+                    this.roles.data = response.data.roles.data;
                 })
                 .catch(error => console.dir(error.response));
         },
-        initialize(){
-            axios.get('/api/roles/')
-            .then( res => {
-                console.log(res)
-            })
-            .catch( err => console.log(err) )
-        },
-        
         paginate(e) {
             axios
                 .get(`/api/roles?page=${e.page}`, {
@@ -238,7 +230,8 @@ export default {
                 })
                 .then(res => {
                     this.roles = res.data.roles;
-                });
+                })
+                .catch( err => {})
         },
         initialize() {
             // Add a request interceptor
@@ -289,13 +282,12 @@ export default {
                     this.text = "Item Deleted Successfully";
                     this.roles.data.forEach((value, index) => {
                         if (res.data.role.id == value.id) {
-                            this.roles.data.splice(index,1);
+                            this.roles.data.splice(index, 1);
                             this.dialogDelete = false;
                         }
                     });
                 })
                 .catch(err => {});
-            
         },
 
         close() {
@@ -326,7 +318,7 @@ export default {
                         this.text = "Item Updated Successfully";
                         this.roles.data.forEach((value, index) => {
                             if (res.data.role.id == value.id) {
-                                this.roles.data.splice(index,1,res.data.role);
+                                this.roles.data.splice(index, 1, res.data.role);
                             }
                         });
                     })
@@ -341,7 +333,7 @@ export default {
                     .then(res => {
                         (this.snackbar = true),
                             (this.text = "Item Added Successfully");
-                        this.roles.data.push(res.data.role);
+                        this.paginate({page:1, itemsPerPage: 10})
                     })
                     .catch(err => {
                         let errors = err.response.data.errors.name;

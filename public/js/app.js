@@ -2627,12 +2627,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-var _methods;
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-//
-//
 //
 //
 //
@@ -2824,12 +2818,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     dialogDelete: function dialogDelete(val) {
       val || this.closeDelete();
-    }
+    },
+    roles: function roles(v) {}
   },
   created: function created() {
     this.initialize();
   },
-  methods: (_methods = {
+  methods: {
     select_all: function select_all(e) {
       this.selected = [];
 
@@ -2842,11 +2837,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     delete_all: function delete_all() {
       var _this = this;
 
-      var decide = confirm('Are you sure want to delete selected item?');
+      var decide = confirm("Are you sure want to delete selected item?");
 
       if (decide) {
-        axios.post('/api/roles/delete_all', {
-          'roles': this.selected
+        axios.post("/api/roles/delete_all", {
+          roles: this.selected
         }).then(function (res) {
           _this.snackbar = true;
           _this.text = "Record deleted successfully";
@@ -2867,17 +2862,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var _this2 = this;
 
       axios.get("/api/roles/".concat(e)).then(function (response) {
-        console.log(response.data.roles.data[0]);
-        _this2.roles = response.data.roles.data[0];
+        _this2.roles.data = response.data.roles.data;
       })["catch"](function (error) {
         return console.dir(error.response);
-      });
-    },
-    initialize: function initialize() {
-      axios.get('/api/roles/').then(function (res) {
-        console.log(res);
-      })["catch"](function (err) {
-        return console.log(err);
       });
     },
     paginate: function paginate(e) {
@@ -2889,104 +2876,114 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }
       }).then(function (res) {
         _this3.roles = res.data.roles;
+      })["catch"](function (err) {});
+    },
+    initialize: function initialize() {
+      // Add a request interceptor
+      axios.interceptors.request.use(function (config) {
+        // Do something before request is sent
+        return config;
+      }, function (error) {
+        // Do something with request error
+        return Promise.reject(error);
+      }); // Add a response interceptor
+
+      axios.interceptors.response.use(function (response) {
+        // Any status code that lie within the range of 2xx cause this function to trigger
+        // Do something with response data
+        return response;
+      }, function (error) {
+        // Any status codes that falls outside the range of 2xx cause this function to trigger
+        // Do something with response error
+        return Promise.reject(error);
       });
-    }
-  }, _defineProperty(_methods, "initialize", function initialize() {
-    // Add a request interceptor
-    axios.interceptors.request.use(function (config) {
-      // Do something before request is sent
-      return config;
-    }, function (error) {
-      // Do something with request error
-      return Promise.reject(error);
-    }); // Add a response interceptor
+    },
+    editItem: function editItem(item) {
+      this.editedIndex = this.roles.toString().indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.dialog = true;
+    },
+    deleteItem: function deleteItem(item) {
+      this.editedIndex = this.roles.toString().indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.dialogDelete = true;
+    },
+    deleteItemConfirm: function deleteItemConfirm() {
+      var _this4 = this;
 
-    axios.interceptors.response.use(function (response) {
-      // Any status code that lie within the range of 2xx cause this function to trigger
-      // Do something with response data
-      return response;
-    }, function (error) {
-      // Any status codes that falls outside the range of 2xx cause this function to trigger
-      // Do something with response error
-      return Promise.reject(error);
-    });
-  }), _defineProperty(_methods, "editItem", function editItem(item) {
-    this.editedIndex = this.roles.toString().indexOf(item);
-    this.editedItem = Object.assign({}, item);
-    this.dialog = true;
-  }), _defineProperty(_methods, "deleteItem", function deleteItem(item) {
-    this.editedIndex = this.roles.toString().indexOf(item);
-    this.editedItem = Object.assign({}, item);
-    this.dialogDelete = true;
-  }), _defineProperty(_methods, "deleteItemConfirm", function deleteItemConfirm() {
-    var _this4 = this;
+      axios.post("/api/roles/delete/" + this.editedItem.id).then(function (res) {
+        _this4.snackbar = true;
+        _this4.text = "Item Deleted Successfully";
 
-    axios.post("/api/roles/delete/" + this.editedItem.id).then(function (res) {
-      _this4.snackbar = true;
-      _this4.text = "Item Deleted Successfully";
-
-      _this4.roles.data.forEach(function (value, index) {
-        if (res.data.role.id == value.id) {
-          _this4.roles.data.splice(index, 1);
-
-          _this4.dialogDelete = false;
-        }
-      });
-    })["catch"](function (err) {});
-  }), _defineProperty(_methods, "close", function close() {
-    var _this5 = this;
-
-    this.dialog = false;
-    this.$nextTick(function () {
-      _this5.editedItem = Object.assign({}, _this5.defaultItem);
-      _this5.editedIndex = -1;
-    });
-  }), _defineProperty(_methods, "closeDelete", function closeDelete() {
-    var _this6 = this;
-
-    this.dialogDelete = false;
-    this.$nextTick(function () {
-      _this6.editedItem = Object.assign({}, _this6.defaultItem);
-      _this6.editedIndex = -1;
-    });
-  }), _defineProperty(_methods, "save", function save() {
-    var _this7 = this;
-
-    if (this.editedIndex > -1) {
-      var id = this.editedItem.id;
-      axios.post("api/roles/update/" + id, {
-        name: this.editedItem.name
-      }).then(function (res) {
-        _this7.snackbar = true;
-        _this7.text = "Item Updated Successfully";
-
-        _this7.roles.data.forEach(function (value, index) {
+        _this4.roles.data.forEach(function (value, index) {
           if (res.data.role.id == value.id) {
-            _this7.roles.data.splice(index, 1, res.data.role);
+            _this4.roles.data.splice(index, 1);
+
+            _this4.dialogDelete = false;
           }
         });
-      })["catch"](function (err) {
-        var error = err.response.data.message;
+      })["catch"](function (err) {});
+    },
+    close: function close() {
+      var _this5 = this;
+
+      this.dialog = false;
+      this.$nextTick(function () {
+        _this5.editedItem = Object.assign({}, _this5.defaultItem);
+        _this5.editedIndex = -1;
       });
-    } else {
-      axios.post("/api/roles/add", {
-        name: this.editedItem.name
-      }).then(function (res) {
-        _this7.snackbar = true, _this7.text = "Item Added Successfully";
+    },
+    closeDelete: function closeDelete() {
+      var _this6 = this;
 
-        _this7.roles.data.push(res.data.role);
-      })["catch"](function (err) {
-        var errors = err.response.data.errors.name;
+      this.dialogDelete = false;
+      this.$nextTick(function () {
+        _this6.editedItem = Object.assign({}, _this6.defaultItem);
+        _this6.editedIndex = -1;
+      });
+    },
+    save: function save() {
+      var _this7 = this;
 
-        for (var x in errors) {
+      if (this.editedIndex > -1) {
+        var id = this.editedItem.id;
+        axios.post("api/roles/update/" + id, {
+          name: this.editedItem.name
+        }).then(function (res) {
           _this7.snackbar = true;
-          _this7.text = errors[x];
-        }
-      });
-    }
+          _this7.text = "Item Updated Successfully";
 
-    this.close();
-  }), _methods)
+          _this7.roles.data.forEach(function (value, index) {
+            if (res.data.role.id == value.id) {
+              _this7.roles.data.splice(index, 1, res.data.role);
+            }
+          });
+        })["catch"](function (err) {
+          var error = err.response.data.message;
+        });
+      } else {
+        axios.post("/api/roles/add", {
+          name: this.editedItem.name
+        }).then(function (res) {
+          _this7.snackbar = true, _this7.text = "Item Added Successfully";
+
+          _this7.paginate({
+            page: 1,
+            itemsPerPage: 10
+          });
+        })["catch"](function (err) {
+          var errors = err.response.data.errors.name;
+
+          for (var x in errors) {
+            _this7.snackbar = true;
+            _this7.text = errors[x];
+          }
+        });
+      }
+
+      this.close();
+    }
+  }
 });
 
 /***/ }),
@@ -25728,12 +25725,12 @@ var render = function() {
         attrs: {
           headers: _vm.headers,
           items: _vm.roles.data,
-          "items-per-page": 5,
+          "items-per-page": 10,
           "show-select": "",
           "server-items-length": _vm.roles.total,
           "sort-by": "calories",
           "footer-props": {
-            itemsPerPageOptions: [5, 10, 15],
+            itemsPerPageOptions: [10],
             itemsPerPageText: "Roles Per Page",
             "show-current-page": true,
             "show-first-last-page": true
@@ -86552,8 +86549,8 @@ var opts = {};
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\Users\User\Desktop\laravue\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\Users\User\Desktop\laravue\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\Users\Windows-10\Desktop\laravue\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\Users\Windows-10\Desktop\laravue\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
