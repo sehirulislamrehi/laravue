@@ -3250,18 +3250,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           return val.id;
         });
       }
-
-      console.dir(this.selected);
     },
     searchIt: function searchIt(e) {
       var _this = this;
 
       axios.get("/api/users/".concat(e)).then(function (response) {
-        console.log(response.data.users.data[0]);
         _this.users = response.data.users.data[0];
-      })["catch"](function (error) {
-        return console.dir(error.response);
-      });
+      })["catch"](function (error) {});
     },
     initialize: function initialize() {
       axios.get('/api/users/').then(function (res) {})["catch"](function (err) {});
@@ -3279,14 +3274,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     }
   }, _defineProperty(_methods, "initialize", function initialize() {
-    // Add a request interceptor
+    // Add a request interceptor 
     axios.interceptors.request.use(function (config) {
       // Do something before request is sent
       return config;
     }, function (error) {
       // Do something with request error
       return Promise.reject(error);
-    }); // Add a response interceptor
+    }); // Add a request interceptor end
+    // Add a response interceptor
 
     axios.interceptors.response.use(function (response) {
       // Any status code that lie within the range of 2xx cause this function to trigger

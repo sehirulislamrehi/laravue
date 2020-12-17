@@ -234,16 +234,14 @@ export default {
             if( e.length > 0 ){
                 this.selected = e.map( val => val.id )
             }
-            console.dir(this.selected)
         },
         
         searchIt(e) {
                 axios.get(`/api/users/${e}`)
                 .then(  ( response ) => {
-                    console.log(response.data.users.data[0])
                     this.users = response.data.users.data[0]
                 })
-                .catch(error => console.dir(error.response));
+                .catch(error => {});
         },
         initialize(){
             axios.get('/api/users/')
@@ -258,12 +256,13 @@ export default {
                     params: { per_page: e.itemsPerPage }
                 })
                 .then(res => {
-                    this.users = res.data.users;
+                    this.users = res.data.users
                     this.role = res.data.roles
                 });
         },
         initialize() {
-            // Add a request interceptor
+
+            // Add a request interceptor 
             axios.interceptors.request.use(
                 function(config) {
                     // Do something before request is sent
@@ -274,6 +273,7 @@ export default {
                     return Promise.reject(error);
                 }
             );
+            // Add a request interceptor end
 
             // Add a response interceptor
             axios.interceptors.response.use(
