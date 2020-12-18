@@ -55,21 +55,21 @@
                                     <v-row>
                                         <v-col sm="6" md="12">
                                             <v-text-field
-                                                v-model="defaultItem.name"
+                                                v-model="editedItem.name"
                                                 label="Name"
                                             ></v-text-field>
                                             <small class="red--text" v-if="errors.name">{{ errors.name[0] }}</small>
                                         </v-col>
                                          <v-col sm="6" md="12">
                                             <v-text-field
-                                                v-model="defaultItem.email"
+                                                v-model="editedItem.email"
                                                 label="Email"
                                             ></v-text-field>
                                             <small class="red--text" v-if="errors.email">{{ errors.email[0] }}</small>
                                         </v-col>
                                         <v-col sm="6" md="12">
                                             <v-text-field
-                                            v-model="defaultItem.password"
+                                            v-model="editedItem.password"
                                             :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
                                             :type="show1 ? 'text' : 'password'"
                                             name="input-10-1"
@@ -81,7 +81,7 @@
                                         </v-col>
                                         <v-col sm="6" md="12">
                                             <v-text-field
-                                            v-model="defaultItem.password_comfirmation"
+                                            v-model="editedItem.password_comfirmation"
                                             :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
                                             :type="show2 ? 'text' : 'password'"
                                             name="input-10-1"
@@ -94,7 +94,8 @@
                                             <v-select
                                                 :items="roles"
                                                 label="Please Select User Role"
-                                                v-model="defaultItem.roles"
+                                                v-model="editedItem.roles"
+                                               
                                             >
 
                                             </v-select>
@@ -148,10 +149,10 @@
                 </v-toolbar>
             </template>
 
-            <template v-slot:[`item.profile.images`]="{ item }">
+            <template v-slot:[`item.image`]="{ item }">
                 <v-img
-                    :src="item.profile.images"
-                    :lazy-src="item.profile.images"
+                    :src="item.image"
+                    :lazy-src="item.image"
                     aspect-ratio="1"
                     class="grey lighten-2"
                     max-width="50"
@@ -205,8 +206,8 @@ export default {
             { text: "id", value : "id" },
             { text: "Name", value: "name" },
             { text: "Email", value: "email" },
-            { text: "Image", value: "profile.images" },
-            { text: "Role", value: "role.name" },
+            { text: "Image", value: "image" },
+            { text: "Role", value: "role" },
             { text: "Actions", value: "actions", sortable: true }
         ],
         users: [],
@@ -216,18 +217,11 @@ export default {
             name: "",
             email: "",
             roles: "",
-            password: "",
-            password_comfirmation: "",
-        },
-        defaultItem: {
-            id: "",
-            name: "",
-            email: "",
-            roles: "",
             image: "",
             password: "",
             password_comfirmation: "",
-        }
+        },
+        
     }),
 
     computed: {
@@ -314,6 +308,7 @@ export default {
             this.editedIndex = this.users.toString().indexOf(item);
             this.editedItem = Object.assign({}, item);
             this.dialog = true;
+            console.log(item)
         },
 
         deleteItem(item) {
@@ -321,6 +316,7 @@ export default {
             this.editedItem = Object.assign({}, item);
 
             this.dialogDelete = true;
+
         },
 
         deleteItemConfirm() {
@@ -343,7 +339,7 @@ export default {
         close() {
             this.dialog = false;
             this.$nextTick(() => {
-                this.editedItem = Object.assign({}, this.defaultItem);
+                this.editedItem = Object.assign({}, this.editedItem);
                 this.editedIndex = -1;
             });
         },
@@ -351,7 +347,7 @@ export default {
         closeDelete() {
             this.dialogDelete = false;
             this.$nextTick(() => {
-                this.editedItem = Object.assign({}, this.defaultItem);
+                this.editedItem = Object.assign({}, this.editedItem);
                 this.editedIndex = -1;
             });
         },
@@ -362,7 +358,11 @@ export default {
                 let id = this.editedItem.id;
                 axios
                     .post("api/users/update/" + id, {
-                        name: this.editedItem.name
+                        name: this.editedItem.name,
+                        email: this.editedItem.email,
+                        password: this.editedItem.password,
+                        password_comfirmation: this.editedItem.password_comfirmation,
+                        roles: this.editedItem.roles
                     })
                     .then(res => {
                         this.snackbar = true;
@@ -380,16 +380,17 @@ export default {
                 this.errors = {};
                 axios
                     .post("/api/users/add", {
-                        name: this.defaultItem.name,
-                        email: this.defaultItem.email,
-                        password: this.defaultItem.password,
-                        password_comfirmation: this.defaultItem.password_comfirmation,
-                        roles: this.defaultItem.roles
+                        name: this.editedItem.name,
+                        email: this.editedItem.email,
+                        password: this.editedItem.password,
+                        password_comfirmation: this.editedItem.password_comfirmation,
+                        roles: this.editedItem.roles
                     })
                     .then(res => {
                         this.dialog = true
-                        (this.snackbar = true),
-                            (this.text = "Item Added Successfully");
+                        this.snackbar = true,
+                        this.text = "Item Added Successfully";
+                        console.log(res.data.user)
                         this.users.data.push(res.data.user);
                         this.paginate({page:1, itemsPerPage: 10})
                     })

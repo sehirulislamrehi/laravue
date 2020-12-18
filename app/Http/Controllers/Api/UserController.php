@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\User as ResourcesUser;
+use App\Http\Resources\UserCollection;
+use App\Models\Profile;
 use App\Models\User;
 use App\Models\Role;
 use Illuminate\Http\Request;
@@ -82,7 +84,7 @@ class UserController extends Controller
     {
         $per_page = $request->per_page;
         return response()->json([
-            'users' => User::with(['role','profile'])->paginate($per_page),
+            'users' => new UserCollection(User::paginate($per_page)),
             'roles' => Role::pluck('name')->all()
         ], 200);
     }
@@ -103,24 +105,30 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required',
-            'password' => 'required|confirmed',
+            'password' => 'required',
             'roles' => 'required',
         ]);
 
-        if( $validator->fails() ){
+        if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
-        }else{
+        } else {
             $user = new User();
+            $role = Role::where('name', $request->roles)->first();
+
             $user->name  = $request->name;
             $user->email  = $request->email;
+            $user->password = Hash::make($request->password);
+            $user->role_id = $role->id;
+
             if ($user->save()) :
-                return response()->json(['user' => $user], 200);
+                $user->role()->associate($role);
+                $user->profile()->save(new Profile());
+                return response()->json(['user' => new ResourcesUser($user)], 200);
             endif;
         }
-        
     }
 
     /**
@@ -149,7 +157,7 @@ class UserController extends Controller
     public function destroy($id)
     {
         $user = User::find($id);
-
+        $profile = Profile::where('user_id', $id)->delete();
         if ($user->delete()) :
             return response()->json(['user' => $user], 200);
         endif;
@@ -159,7 +167,7 @@ class UserController extends Controller
 
     public function delete_all(Request $request)
     {
-        $users = User::whereIn('id', $request->users)->delete();
+        return $users = User::whereIn('id', $request->users);
         if ($users) {
             return response()->json(['users' => $users], 200);
         }

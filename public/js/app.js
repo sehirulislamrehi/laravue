@@ -3193,6 +3193,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3217,10 +3218,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         value: "email"
       }, {
         text: "Image",
-        value: "profile.images"
+        value: "image"
       }, {
         text: "Role",
-        value: "role.name"
+        value: "role"
       }, {
         text: "Actions",
         value: "actions",
@@ -3229,14 +3230,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       users: [],
       editedIndex: -1,
       editedItem: {
-        id: "",
-        name: "",
-        email: "",
-        roles: "",
-        password: "",
-        password_comfirmation: ""
-      },
-      defaultItem: {
         id: "",
         name: "",
         email: "",
@@ -3321,6 +3314,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.editedIndex = this.users.toString().indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
+      console.log(item);
     },
     deleteItem: function deleteItem(item) {
       this.editedIndex = this.users.toString().indexOf(item);
@@ -3348,7 +3342,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       this.dialog = false;
       this.$nextTick(function () {
-        _this4.editedItem = Object.assign({}, _this4.defaultItem);
+        _this4.editedItem = Object.assign({}, _this4.editedItem);
         _this4.editedIndex = -1;
       });
     },
@@ -3357,7 +3351,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       this.dialogDelete = false;
       this.$nextTick(function () {
-        _this5.editedItem = Object.assign({}, _this5.defaultItem);
+        _this5.editedItem = Object.assign({}, _this5.editedItem);
         _this5.editedIndex = -1;
       });
     },
@@ -3369,7 +3363,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (this.editedIndex > -1) {
         var id = this.editedItem.id;
         axios.post("api/users/update/" + id, {
-          name: this.editedItem.name
+          name: this.editedItem.name,
+          email: this.editedItem.email,
+          password: this.editedItem.password,
+          password_comfirmation: this.editedItem.password_comfirmation,
+          roles: this.editedItem.roles
         }).then(function (res) {
           _this6.snackbar = true;
           _this6.text = "Item Updated Successfully";
@@ -3385,13 +3383,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       } else {
         this.errors = {};
         axios.post("/api/users/add", {
-          name: this.defaultItem.name,
-          email: this.defaultItem.email,
-          password: this.defaultItem.password,
-          password_comfirmation: this.defaultItem.password_comfirmation,
-          roles: this.defaultItem.roles
+          name: this.editedItem.name,
+          email: this.editedItem.email,
+          password: this.editedItem.password,
+          password_comfirmation: this.editedItem.password_comfirmation,
+          roles: this.editedItem.roles
         }).then(function (res) {
-          _this6.dialog = true(_this6.snackbar = true), _this6.text = "Item Added Successfully";
+          _this6.dialog = true;
+          _this6.snackbar = true, _this6.text = "Item Added Successfully";
+          console.log(res.data.user);
 
           _this6.users.data.push(res.data.user);
 
@@ -26249,15 +26249,15 @@ var render = function() {
                                               _c("v-text-field", {
                                                 attrs: { label: "Name" },
                                                 model: {
-                                                  value: _vm.defaultItem.name,
+                                                  value: _vm.editedItem.name,
                                                   callback: function($$v) {
                                                     _vm.$set(
-                                                      _vm.defaultItem,
+                                                      _vm.editedItem,
                                                       "name",
                                                       $$v
                                                     )
                                                   },
-                                                  expression: "defaultItem.name"
+                                                  expression: "editedItem.name"
                                                 }
                                               }),
                                               _vm._v(" "),
@@ -26287,16 +26287,15 @@ var render = function() {
                                               _c("v-text-field", {
                                                 attrs: { label: "Email" },
                                                 model: {
-                                                  value: _vm.defaultItem.email,
+                                                  value: _vm.editedItem.email,
                                                   callback: function($$v) {
                                                     _vm.$set(
-                                                      _vm.defaultItem,
+                                                      _vm.editedItem,
                                                       "email",
                                                       $$v
                                                     )
                                                   },
-                                                  expression:
-                                                    "defaultItem.email"
+                                                  expression: "editedItem.email"
                                                 }
                                               }),
                                               _vm._v(" "),
@@ -26344,16 +26343,16 @@ var render = function() {
                                                 },
                                                 model: {
                                                   value:
-                                                    _vm.defaultItem.password,
+                                                    _vm.editedItem.password,
                                                   callback: function($$v) {
                                                     _vm.$set(
-                                                      _vm.defaultItem,
+                                                      _vm.editedItem,
                                                       "password",
                                                       $$v
                                                     )
                                                   },
                                                   expression:
-                                                    "defaultItem.password"
+                                                    "editedItem.password"
                                                 }
                                               }),
                                               _vm._v(" "),
@@ -26402,17 +26401,17 @@ var render = function() {
                                                 },
                                                 model: {
                                                   value:
-                                                    _vm.defaultItem
+                                                    _vm.editedItem
                                                       .password_comfirmation,
                                                   callback: function($$v) {
                                                     _vm.$set(
-                                                      _vm.defaultItem,
+                                                      _vm.editedItem,
                                                       "password_comfirmation",
                                                       $$v
                                                     )
                                                   },
                                                   expression:
-                                                    "defaultItem.password_comfirmation"
+                                                    "editedItem.password_comfirmation"
                                                 }
                                               })
                                             ],
@@ -26430,16 +26429,15 @@ var render = function() {
                                                     "Please Select User Role"
                                                 },
                                                 model: {
-                                                  value: _vm.defaultItem.roles,
+                                                  value: _vm.editedItem.roles,
                                                   callback: function($$v) {
                                                     _vm.$set(
-                                                      _vm.defaultItem,
+                                                      _vm.editedItem,
                                                       "roles",
                                                       $$v
                                                     )
                                                   },
-                                                  expression:
-                                                    "defaultItem.roles"
+                                                  expression: "editedItem.roles"
                                                 }
                                               }),
                                               _vm._v(" "),
@@ -26590,15 +26588,15 @@ var render = function() {
               proxy: true
             },
             {
-              key: "item.profile.images",
+              key: "item.image",
               fn: function(ref) {
                 var item = ref.item
                 return [
                   _c("v-img", {
                     staticClass: "grey lighten-2",
                     attrs: {
-                      src: item.profile.images,
-                      "lazy-src": item.profile.images,
+                      src: item.image,
+                      "lazy-src": item.image,
                       "aspect-ratio": "1",
                       "max-width": "50",
                       "max-height": "50"
@@ -86671,8 +86669,8 @@ var opts = {};
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\Users\Windows-10\Desktop\laravue\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\Users\Windows-10\Desktop\laravue\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\Users\User\Desktop\laravue\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\Users\User\Desktop\laravue\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
