@@ -3233,7 +3233,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         id: "",
         name: "",
         email: "",
-        roles: "",
+        role: "",
         image: "",
         password: "",
         password_comfirmation: ""
@@ -3314,7 +3314,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.editedIndex = this.users.toString().indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
-      console.log(item);
     },
     deleteItem: function deleteItem(item) {
       this.editedIndex = this.users.toString().indexOf(item);
@@ -3367,7 +3366,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           email: this.editedItem.email,
           password: this.editedItem.password,
           password_comfirmation: this.editedItem.password_comfirmation,
-          roles: this.editedItem.roles
+          role: this.editedItem.role
         }).then(function (res) {
           _this6.snackbar = true;
           _this6.text = "Item Updated Successfully";
@@ -3378,7 +3377,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             }
           });
         })["catch"](function (err) {
-          var error = err.response.data.message;
+          var error = err.response.data.error;
+          _this6.errors = _objectSpread({}, error);
+          _this6.dialog = true;
         });
       } else {
         this.errors = {};
@@ -26429,15 +26430,15 @@ var render = function() {
                                                     "Please Select User Role"
                                                 },
                                                 model: {
-                                                  value: _vm.editedItem.roles,
+                                                  value: _vm.editedItem.role,
                                                   callback: function($$v) {
                                                     _vm.$set(
                                                       _vm.editedItem,
-                                                      "roles",
+                                                      "role",
                                                       $$v
                                                     )
                                                   },
-                                                  expression: "editedItem.roles"
+                                                  expression: "editedItem.role"
                                                 }
                                               }),
                                               _vm._v(" "),
@@ -86669,8 +86670,8 @@ var opts = {};
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\Users\User\Desktop\laravue\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\Users\User\Desktop\laravue\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\Users\Windows-10\Desktop\laravue\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\Users\Windows-10\Desktop\laravue\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

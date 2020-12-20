@@ -94,7 +94,7 @@
                                             <v-select
                                                 :items="roles"
                                                 label="Please Select User Role"
-                                                v-model="editedItem.roles"
+                                                v-model="editedItem.role"
                                                
                                             >
 
@@ -216,7 +216,7 @@ export default {
             id: "",
             name: "",
             email: "",
-            roles: "",
+            role: "",
             image: "",
             password: "",
             password_comfirmation: "",
@@ -308,15 +308,12 @@ export default {
             this.editedIndex = this.users.toString().indexOf(item);
             this.editedItem = Object.assign({}, item);
             this.dialog = true;
-            console.log(item)
         },
 
         deleteItem(item) {
             this.editedIndex = this.users.toString().indexOf(item);
             this.editedItem = Object.assign({}, item);
-
             this.dialogDelete = true;
-
         },
 
         deleteItemConfirm() {
@@ -362,7 +359,7 @@ export default {
                         email: this.editedItem.email,
                         password: this.editedItem.password,
                         password_comfirmation: this.editedItem.password_comfirmation,
-                        roles: this.editedItem.roles
+                        role: this.editedItem.role
                     })
                     .then(res => {
                         this.snackbar = true;
@@ -374,7 +371,9 @@ export default {
                         });
                     })
                     .catch(err => {
-                        let error = err.response.data.message;
+                        let error = err.response.data.error;
+                        this.errors = {...error}
+                        this.dialog = true
                     });
             } else {
                 this.errors = {};

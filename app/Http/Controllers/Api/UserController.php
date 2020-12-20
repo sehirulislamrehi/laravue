@@ -66,7 +66,10 @@ class UserController extends Controller
             $user->name = $request->name;
             $user->email = $request->email;
             $user->password = Hash::make($request->password);
+            $user->role_id = 41;
+            $user->profile()->save(new Profile());
             if ($user->save()) :
+
                 return response()->json(['status', 'Registration successfully done'], 200);
             else :
                 return response()->json(['status', 'Registration Failed'], 403);
@@ -140,12 +143,24 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $user = User::find($id);
-        $user->name = $request->name;
-        $user->email  = $request->email;
-        if ($user->save()) :
-            return response()->json(['user' => $user], 200);
-        endif;
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => 'required',
+            'role' => 'required',
+        ]);
+
+        if( $validator->fails() ){
+            return response()->json(['error' => $validator->errors()], 422);
+        }else{
+            $user = User::find($id);
+            $user->name = $request->name;
+            $user->email  = $request->email;
+            if ($user->save()) :
+                return response()->json(['user' => $user], 200);
+            endif;
+        }
+
+       
     }
 
     /**
